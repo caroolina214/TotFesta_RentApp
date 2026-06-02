@@ -1,7 +1,7 @@
 {
   "name": "totfesta",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "dependencies": {
     "@expo/html-elements": "^0.12.5",
     "@gluestack-ui/core": "^3.0.10",
@@ -10,6 +10,8 @@
     "@legendapp/motion": "^2.4.0",
     "babel-preset-expo": "^56.0.14",
     "expo": "~56.0.8",
+    "expo-linking": "~56.0.13",
+    "expo-router": "^56.2.8",
     "expo-status-bar": "~56.0.4",
     "lucide-react-native": "^0.510.0",
     "nativewind": "^4.1.23",
