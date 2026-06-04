@@ -1,10 +1,5 @@
-import { Text } from '@/src/components/ui/text';
-import { View } from 'react-native';
+import { Redirect } from 'expo-router';
 
 export default function Index() {
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>TotFesta 🎉</Text>
-        </View>
-    );
+    return <Redirect href="/LoginPage" />;
 }

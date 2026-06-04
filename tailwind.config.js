@@ -1,3 +1,5 @@
+const { AppColors } = require('./src/constants/colors');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: process.env.DARK_MODE ? process.env.DARK_MODE : 'class',
@@ -14,6 +16,13 @@ module.exports = {
     {
       pattern:
         /(bg|border|text|stroke|fill)-(primary|secondary|tertiary|error|success|warning|info|typography|outline|background|indicator)-(0|50|100|200|300|400|500|600|700|800|900|950|white|gray|black|error|warning|muted|success|info|light|dark|primary)/,
+    },
+    {
+      pattern:
+        /(bg|border|text|stroke|fill)-festa-(aqua|aquaClar|aquaObscur|morat|moratClar|moratObscur|fucsia|fucsiaClar|fucsiaObscur|groc|grocClar|grocObscur|verd|verdClar|verdObscur|baseClar|baseMig|baseObscur)/,
+    },
+    {
+      pattern: /font-(fuzzy|fuzzy-bold|schibsted|schibsted-italic|roboto-mono|roboto-mono-italic)/,
     },
   ],
   theme: {
@@ -173,6 +182,26 @@ module.exports = {
           info: 'rgb(var(--color-indicator-info)/<alpha-value>)',
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
         },
+        festa: {
+          aqua: AppColors.Aqua,
+          aquaClar: AppColors.AquaClar,
+          aquaObscur: AppColors.AquaObscur,
+          morat: AppColors.Morat,
+          moratClar: AppColors.MoratClar,
+          moratObscur: AppColors.MoratObscur,
+          fucsia: AppColors.Fucsia,
+          fucsiaClar: AppColors.FucsiaClar,
+          fucsiaObscur: AppColors.FucsiaObscur,
+          groc: AppColors.Groc,
+          grocClar: AppColors.GrocClar,
+          grocObscur: AppColors.GrocObscur,
+          verd: AppColors.Verd,
+          verdClar: AppColors.VerdClar,
+          verdObscur: AppColors.VerdObscur,
+          baseClar: AppColors.BaseClar,
+          baseMig: AppColors.BaseMig,
+          baseObscur: AppColors.BaseObscur,
+        },
       },
       fontFamily: {
         heading: undefined,
@@ -183,6 +212,12 @@ module.exports = {
         code: ['var(--font-source-code-pro)'],
         inter: ['var(--font-inter)'],
         'space-mono': ['var(--font-space-mono)'],
+        'fuzzy': ['FuzzyBubbles'],
+        'fuzzy-bold': ['FuzzyBubbles-Bold'],
+        'schibsted': ['SchibstedGrotesk'],
+        'schibsted-italic': ['SchibstedGrotesk-Italic'],
+        'roboto-mono': ['RobotoMono'],
+        'roboto-mono-italic': ['RobotoMono-Italic'],
       },
       fontWeight: {
         extrablack: '950',
