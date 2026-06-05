@@ -5,11 +5,13 @@ import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { Card } from '@/src/components/ui/card';
 import { useState } from 'react';
-import { useColorScheme, ScrollView, Pressable, View } from 'react-native';
+import { useColorScheme, ScrollView, Pressable, View, Platform } from 'react-native';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
 import DiscoBall from '@/src/components/custom/DiscoBall';
 import { AppColors } from '../constants/colors';
 import { useWindowDimensions } from 'react-native';
+import { authStore } from '@/src/store/authStore';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
     const colorScheme = useColorScheme();
@@ -19,11 +21,13 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const { width } = useWindowDimensions();
-    const isWeb = width > 768;
+    const { width, height } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+    const isTallScreen = height > 800;
 
     const handleLogin = () => {
-        console.log('login', email, password);
+        authStore.login();
+        router.replace('/(protected)/(tabs)');
     };
 
     return (
@@ -31,37 +35,50 @@ export default function LoginScreen() {
             contentContainerStyle={{
                 flexGrow: 1,
                 alignItems: 'center',
-                justifyContent: isWeb ? 'center' : 'space-between',
+                justifyContent: isTallScreen ? 'flex-start' : 'space-between',
+                paddingTop: isWeb ? 0 : 15,
                 padding: 15,
                 backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
             }}
             keyboardShouldPersistTaps="handled"
         >
-            {/* Discoball - sempre dalt */}
-            <DiscoBall size={isWeb ? 50 : 150} />
+            {/* Discoball */}
+            <DiscoBall size={isWeb ? (isTallScreen ? 190 : 120) : 150} />
 
             {/* Bloc central - títol, card i registre */}
-            <View style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{ alignItems: 'center', width: '100%', marginTop: isTallScreen ? 60 : 0 }}>
                 <Text className="text-6xl md:text-5xl font-fuzzy-bold mt-2 text-festa-aqua">
                     TotFesta
                 </Text>
-                <Text className={`text-lg md:text-base mb-8 uppercase font-schibsted-italic text-center ${isDark ? 'text-festa-aquaClar' : 'text-festa-aquaObscur'}`}>
+                <Text className={`text-lg md:text-base mb-6 uppercase font-schibsted-italic text-center ${isDark ? 'text-festa-aquaClar' : 'text-festa-aquaObscur'}`}>
                     Lloga fàcil. Celebra gran.
                 </Text>
-                <Card className="w-full max-w-sm p-6 rounded-2xl bg-festa-verdClar">
+                <Card
+                    className="w-full max-w-xs lg:max-w-md p-6 rounded-2xl bg-festa-grocClar shadow-lg"
+                    style={Platform.select({
+                        android: {
+                            elevation: 8,
+                        },
+                    })}
+                >
                     <VStack space="2xl">
                         <FormControl>
                             <FormControlLabel>
                                 <FormControlLabelText>Correu electrònic</FormControlLabelText>
                             </FormControlLabel>
-                            <Input>
+                            <Input
+                                className="bg-festa-baseClar text-festa-baseObscur
+                                        border-festa-baseMig
+                                        data-[focus=true]:border-festa-aqua
+                                        data-[focus=true]:hover:border-festa-aqua 
+                                        data-[focus=true]:web:ring-0"
+                            >
                                 <InputField
                                     placeholder="exemple@correu.com"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     value={email}
                                     onChangeText={setEmail}
-                                    className="bg-festa-baseClar text-festa-baseObscur"
                                 />
                             </Input>
                         </FormControl>
@@ -69,11 +86,18 @@ export default function LoginScreen() {
                             <FormControlLabel>
                                 <FormControlLabelText>Contrasenya</FormControlLabelText>
                             </FormControlLabel>
-                            <Input>
+                            <Input
+                                className="bg-festa-baseClar text-festa-baseObscur
+                                        border-festa-baseMig
+                                        data-[focus=true]:border-festa-aqua
+                                        data-[focus=true]:hover:border-festa-aqua
+                                        data-[focus=true]:web:ring-0"
+                            >
                                 <InputField
-                                    placeholder="••••••••"
+                                    placeholder="********"
                                     secureTextEntry={!showPassword}
                                     value={password}
+                                    autoCapitalize="none"
                                     onChangeText={setPassword}
                                 />
                                 <InputSlot
@@ -90,15 +114,14 @@ export default function LoginScreen() {
                     </VStack>
                 </Card>
                 <Pressable className="mt-6">
-                    <Text className="text-festa-baseMig text-sm">
+                    <Text className="text-festa-baseMig text-sm mb-7">
                         No tens compte?{' '}
                         <Text className="text-festa-verdObscur">Registra't</Text>
                     </Text>
                 </Pressable>
             </View>
 
-            {/* Espai buit per equilibrar el space-between en mòbil */}
-            {!isWeb && <View />}
+            <View />
 
         </ScrollView>
     );
