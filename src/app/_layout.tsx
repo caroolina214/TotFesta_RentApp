@@ -1,9 +1,9 @@
 import { GluestackUIProvider } from '@/src/components/ui/gluestack-ui-provider';
-import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
 import { SplashScreen } from 'expo-router';
 import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
 import '@/global.css';
 
 SplashScreen.preventAutoHideAsync();
@@ -21,9 +21,7 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
-        if (fontsLoaded) {
-            SplashScreen.hideAsync();
-        }
+        if (fontsLoaded) SplashScreen.hideAsync();
     }, [fontsLoaded]);
 
     if (!fontsLoaded) return null;
