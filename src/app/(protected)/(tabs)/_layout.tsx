@@ -15,7 +15,7 @@ export default function TabsLayout() {
                 tabBarInactiveTintColor: AppColors.BaseMig,
                 tabBarStyle: {
                     backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
-                    borderTopColor: isDark ? AppColors.MoratObscur : AppColors.AquaClar,
+                    borderTopColor: AppColors.BaseMig,
                 },
                 tabBarLabelStyle: {
                     fontFamily: 'SchibstedGrotesk',
