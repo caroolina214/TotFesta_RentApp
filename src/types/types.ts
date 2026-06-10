@@ -24,7 +24,8 @@ export type EstadoPedido =
   | 'ENTREGADO'
   | 'DEVUELTO'
   | 'PENDIENTE_REVISION'
-  | 'FINALIZADO';
+  | 'FINALIZADO'
+  | 'CANCELADO';
 
 export interface Cliente {
   id: number;
