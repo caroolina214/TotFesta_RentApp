@@ -19,8 +19,8 @@ module.exports = {
     },
     {
       pattern:
-        /(bg|border|text|stroke|fill)-festa-(aqua|aquaClar|aquaObscur|morat|moratClar|moratObscur|fucsia|fucsiaClar|fucsiaObscur|groc|grocClar|grocObscur|verd|verdClar|verdObscur|baseClar|baseMig|baseObscur)/,
-      variants: ['data-[focus=true]', 'data-[focus=true]:hover'],
+        /(bg|border|text|stroke|fill|shadow)-festa-(aqua|aquaClar|aquaObscur|morat|moratClar|moratObscur|fucsia|fucsiaClar|fucsiaObscur|groc|grocClar|grocObscur|verd|verdClar|verdObscur|baseClar|baseMig|baseObscur)/,
+      variants: ['data-[focus=true]', 'data-[focus=true]:hover', 'data-[hover=true]', 'hover', 'focus', 'active'],
     },
     {
       pattern: /font-(fuzzy|fuzzy-bold|schibsted|schibsted-italic|roboto-mono|roboto-mono-italic)/,
