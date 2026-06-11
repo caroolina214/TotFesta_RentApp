@@ -96,7 +96,7 @@ export default function ClientsScreen() {
                         filtered.map(client => {
                             const pedidosCount = getPedidosCount(client.id);
                             return (
-                                <Pressable key={client.id}>
+                                <Pressable key={client.id} onPress={() => router.push(`/(protected)/(tabs)/clients/${client.id}`)}>
                                     <Card className={`p-4 rounded-2xl shadow-sm hover:bg-festa-aquaClar ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
                                         <HStack style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                             <VStack space="xs" style={{ flex: 1 }}>
