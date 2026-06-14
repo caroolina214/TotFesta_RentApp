@@ -51,7 +51,7 @@ export default function ClientsScreen() {
                     <Text className="text-2xl font-fuzzy-bold text-festa-aqua">Clients</Text>
                     {!isSmall && (
                         <Pressable
-                            // onPress={() => router.push('/(protected)/(tabs)/clients/new')}
+                            onPress={() => router.push('/(protected)/(tabs)/clients/new')}
                             style={{ backgroundColor: AppColors.Aqua, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}
                         >
                             <Plus size={16} color={AppColors.BaseObscur} />
@@ -187,7 +187,7 @@ export default function ClientsScreen() {
 
             {isSmall && (
                 <Pressable
-                    // onPress={() => router.push('/(protected)/(tabs)/clients/new')}
+                    onPress={() => router.push('/(protected)/(tabs)/clients/new')}
                     style={{
                         position: 'absolute',
                         bottom: 24,

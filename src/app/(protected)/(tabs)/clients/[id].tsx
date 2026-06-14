@@ -78,6 +78,7 @@ export default function ClientDetailScreen() {
                         <HStack style={{ justifyContent: 'flex-end' }}>
                             <HStack space="sm">
                                 <Pressable
+                                    onPress={() => router.push(`/(protected)/(tabs)/clients/new?id=${id}`)}
                                     style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: AppColors.AquaClar, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, shadowColor: AppColors.BaseObscur, shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.3, shadowRadius: 2, elevation: 3 }}
                                 >
                                     <Pencil size={14} color={AppColors.AquaObscur} />
@@ -121,6 +122,7 @@ export default function ClientDetailScreen() {
                         </HStack>
                         <HStack space="sm">
                             <Pressable
+                                onPress={() => router.push(`/(protected)/(tabs)/clients/new?id=${id}`)}
                                 style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: AppColors.AquaClar, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, shadowColor: AppColors.BaseObscur, shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.3, shadowRadius: 2, elevation: 3 }}
                             >
                                 <Pencil size={14} color={AppColors.AquaObscur} />
