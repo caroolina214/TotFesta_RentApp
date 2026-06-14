@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, RotateCcw, Save } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+import RequiredLabel from '@/src/components/custom/RequiredLabel';
 
 
 export default function ClientFormScreen() {
@@ -25,12 +26,6 @@ export default function ClientFormScreen() {
 
     const inputClass = `border-festa-baseMig data-[focus=true]:border-festa-morat data-[focus=true]:web:ring-0 ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`;
     const textareaClass = `border-festa-baseMig data-[focus=true]:border-festa-morat ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`;
-
-    const RequiredLabel = ({ label }: { label: string }) => (
-        <FormControlLabelText className="font-schibsted text-sm" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
-            {label} <Text style={{ color: AppColors.Fucsia }}>*</Text>
-        </FormControlLabelText>
-    );
 
     return (
         <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}>
