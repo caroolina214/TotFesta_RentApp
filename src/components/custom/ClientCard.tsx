@@ -12,15 +12,16 @@ interface ClientCardProps {
     client: Cliente;
     pedidosCount: number;
     isSmall: boolean;
+    onPress: () => void;
 }
 
-export default function ClientCard({ client, pedidosCount, isSmall }: ClientCardProps) {
+export default function ClientCard({ client, pedidosCount, isSmall, onPress }: ClientCardProps) {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
     return (
-        <Pressable onPress={() => router.push(`/(protected)/(tabs)/clients/${client.id}`)}>
-            <Card className={`p-4 rounded-2xl shadow-sm hover:bg-festa-aquaClar ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+        <Card className={`p-4 rounded-2xl shadow-sm hover:bg-festa-aquaClar ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+            <Pressable onPress={onPress}>
                 <HStack style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <VStack space="xs" style={{ flex: 1 }}>
                         <Text className="font-schibsted text-base" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
@@ -100,7 +101,7 @@ export default function ClientCard({ client, pedidosCount, isSmall }: ClientCard
                         )}
                     </VStack>
                 </HStack>
-            </Card>
-        </Pressable>
+            </Pressable>
+        </Card>
     );
 }

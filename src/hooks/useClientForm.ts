@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
@@ -29,8 +29,8 @@ export function useClientForm(id?: string) {
         visible: boolean;
         title: string;
         message: string;
-        onConfirm: () => void;
-    }>({ visible: false, title: '', message: '', onConfirm: () => { } });
+    }>({ visible: false, title: '', message: '' });
+    const onConfirmRef = useRef<() => void>(() => { });
 
     useEffect(() => {
         if (isEdit) {
@@ -58,9 +58,9 @@ export function useClientForm(id?: string) {
     }, [id]);
 
     const confirmAction = (title: string, message: string, onConfirm: () => void) => {
-        setConfirmDialog({ visible: true, title, message, onConfirm });
+        onConfirmRef.current = onConfirm;
+        setConfirmDialog({ visible: true, title, message });
     };
-
     const closeDialog = () => setConfirmDialog(prev => ({ ...prev, visible: false }));
 
     const handleSave = handleSubmit((data: ClientFormValues) => {
@@ -88,7 +88,7 @@ export function useClientForm(id?: string) {
         errors,
         isDirty,
         isEdit,
-        confirmDialog,
+        confirmDialog: { ...confirmDialog, onConfirm: onConfirmRef.current },
         closeDialog,
         handleSave,
         handleReset,

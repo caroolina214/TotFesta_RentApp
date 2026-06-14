@@ -9,11 +9,13 @@ import { Cliente, DireccionCliente, PedidoConDetalle } from '@/src/types/types';
 import { clientes, direccionesCliente, listPedidosResumen } from '@/src/types/types';
 import { AppColors } from '@/src/constants/colors';
 import { Phone, Mail, FileText, MapPin, Pencil, UserX, Package, ChevronLeft } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ClientDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const insets = useSafeAreaInsets();
 
     const { width } = useWindowDimensions();
     const isSmall = width < 640;
@@ -60,7 +62,7 @@ export default function ClientDetailScreen() {
 
     return (
         <ScrollView
-            contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 30, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}
+            contentContainerStyle={{ paddingVertical: insets.top + 16, paddingHorizontal: 30, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}
         >
             <VStack space="md">
 

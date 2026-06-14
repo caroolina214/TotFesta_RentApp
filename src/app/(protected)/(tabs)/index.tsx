@@ -1,19 +1,19 @@
 import { Card } from '@/src/components/ui/card';
+import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
-import { HStack } from '@/src/components/ui/hstack';
-import { listPedidosActivos, listPedidosResumen } from '@/src/types/types';
-import { useEffect, useState } from 'react';
-import { ScrollView, useColorScheme } from 'react-native';
 import { AppColors } from '@/src/constants/colors';
-import { PedidoConDetalle } from '@/src/types/types';
+import { listPedidosActivos, listPedidosResumen, PedidoConDetalle } from '@/src/types/types';
 import { router } from 'expo-router';
-import { Pressable } from 'react-native';
-import { Package, Users, ArrowRight } from 'lucide-react-native';
+import { ArrowRight, Package, Users } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, useColorScheme } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const insets = useSafeAreaInsets();
 
     const [pedidosActivos, setPedidosActivos] = useState<PedidoConDetalle[]>([]);
     const [totalPedidos, setTotalPedidos] = useState(0);
@@ -39,6 +39,8 @@ export default function HomeScreen() {
                 flexGrow: 1,
                 padding: 24,
                 backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
+                paddingTop: insets.top + 15,
+                paddingBottom: insets.bottom,
             }}
         >
             <VStack space="xl">

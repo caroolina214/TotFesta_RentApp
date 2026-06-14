@@ -13,6 +13,7 @@ import { ChevronLeft, RotateCcw, Save } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
 import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
 import RequiredLabel from '@/src/components/custom/RequiredLabel';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function ClientFormScreen() {
@@ -21,6 +22,7 @@ export default function ClientFormScreen() {
     const isDark = colorScheme === 'dark';
     const { width } = useWindowDimensions();
     const isSmall = width < 640;
+    const insets = useSafeAreaInsets();
 
     const { control, errors, isDirty, isEdit, confirmDialog, closeDialog, handleSave, handleReset } = useClientForm(id);
 
@@ -28,7 +30,7 @@ export default function ClientFormScreen() {
     const textareaClass = `border-festa-baseMig data-[focus=true]:border-festa-morat ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`;
 
     return (
-        <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}>
+        <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar, paddingTop: insets.top, paddingBottom: insets.bottom }}>
             {/* Capçalera sticky */}
             <View style={{
                 flexDirection: 'row',

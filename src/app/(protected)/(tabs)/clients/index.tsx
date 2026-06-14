@@ -10,11 +10,13 @@ import { router } from 'expo-router';
 import { Plus, Search, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function ClientsScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
+    const insets = useSafeAreaInsets();
 
     const [clients, setClients] = useState<Cliente[]>([]);
     const [search, setSearch] = useState('');
@@ -42,7 +44,7 @@ export default function ClientsScreen() {
         pedidos.filter(p => p.clienteId === clientId).length;
 
     return (
-        <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}>
+        <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar, paddingTop: insets.top, paddingBottom: insets.bottom }}>
 
             <View style={{ padding: 16, paddingBottom: 8 }}>
                 <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -97,6 +99,7 @@ export default function ClientsScreen() {
                                 client={client}
                                 pedidosCount={getPedidosCount(client.id)}
                                 isSmall={isSmall}
+                                onPress={() => router.push({ pathname: '/clients/[id]', params: { id: client.id } })}
                             />
                         ))
                     )}
