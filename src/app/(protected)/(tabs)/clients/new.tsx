@@ -1,18 +1,18 @@
-import { useLocalSearchParams, router } from 'expo-router';
-import { ScrollView, View, useColorScheme, Pressable, useWindowDimensions } from 'react-native';
-import { Controller } from 'react-hook-form';
-import { Text } from '@/src/components/ui/text';
+import ConfirmDialog from '@/src/components/custom/ConfirmDialog';
 import { Card } from '@/src/components/ui/card';
-import { VStack } from '@/src/components/ui/vstack';
+import { FormControl, FormControlError, FormControlErrorText, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
 import { HStack } from '@/src/components/ui/hstack';
 import { Input, InputField } from '@/src/components/ui/input';
+import { Text } from '@/src/components/ui/text';
 import { Textarea, TextareaInput } from '@/src/components/ui/textarea';
-import { FormControl, FormControlLabel, FormControlLabelText, FormControlError, FormControlErrorText } from '@/src/components/ui/form-control';
+import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
-import { ChevronLeft, Save, RotateCcw } from 'lucide-react-native';
-import { AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@/src/components/ui/alert-dialog';
-import { Button, ButtonText } from '@/src/components/ui/button';
 import { useClientForm } from '@/src/hooks/useClientForm';
+import { router, useLocalSearchParams } from 'expo-router';
+import { ChevronLeft, RotateCcw, Save } from 'lucide-react-native';
+import { Controller } from 'react-hook-form';
+import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+
 
 export default function ClientFormScreen() {
     const { id } = useLocalSearchParams<{ id?: string }>();
@@ -181,27 +181,14 @@ export default function ClientFormScreen() {
                 </VStack>
             </ScrollView>
 
-            <AlertDialog isOpen={confirmDialog.visible} onClose={closeDialog}>
-                <AlertDialogBackdrop />
-                <AlertDialogContent className={isDark ? 'bg-festa-moratObscur' : 'bg-white'}>
-                    <AlertDialogHeader>
-                        <Text className="text-xl font-fuzzy-bold text-festa-morat">{confirmDialog.title}</Text>
-                    </AlertDialogHeader>
-                    <AlertDialogBody>
-                        <Text className="font-schibsted pb-5" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
-                            {confirmDialog.message}
-                        </Text>
-                    </AlertDialogBody>
-                    <AlertDialogFooter>
-                        <Button variant="outline" onPress={closeDialog} className="border-festa-baseMig">
-                            <ButtonText className="font-schibsted text-festa-baseMig">Cancel·lar</ButtonText>
-                        </Button>
-                        <Button onPress={() => { confirmDialog.onConfirm(); closeDialog(); }} className="bg-festa-aqua">
-                            <ButtonText className="font-schibsted text-festa-baseObscur">Confirmar</ButtonText>
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+
+            <ConfirmDialog
+                visible={confirmDialog.visible}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                onConfirm={confirmDialog.onConfirm}
+                onClose={closeDialog}
+            />
         </View>
     );
 }
