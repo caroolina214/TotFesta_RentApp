@@ -1,6 +1,7 @@
 import { Card } from '@/src/components/ui/card';
 import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
+import { View } from '@/src/components/ui/view';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { listPedidosActivos, listPedidosResumen, PedidoConDetalle } from '@/src/types/types';
@@ -9,6 +10,7 @@ import { ArrowRight, Package, Users } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PedidoItem from '@/src/components/custom/PedidoItem';
 
 export default function HomeScreen() {
     const colorScheme = useColorScheme();
@@ -116,30 +118,13 @@ export default function HomeScreen() {
                         </Card>
                     ) : (
                         pedidosActivos.map((pedido) => (
-                            <Card key={pedido.id} className={`p-4 rounded-2xl ${isDark ? 'bg-festa-baseMig' : 'bg-white'}`}>
-                                <HStack space="md" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <VStack space="xs" style={{ flex: 1 }}>
-                                        <Text className="text-sm font-schibsted" style={{ color: AppColors.BaseObscur }}>
-                                            {pedido.codigo} — {pedido.cliente.nombre}
-                                        </Text>
-                                        <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
-                                            {pedido.lineas.length} productes · {pedido.totalUnidades} unitats
-                                        </Text>
-                                        <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
-                                            {pedido.fechaInicio} → {pedido.fechaFin}
-                                        </Text>
-                                    </VStack>
-                                    <Text className={`text-xs font-schibsted px-2 py-1 rounded-full ${pedido.estado === 'PREPARADO' ? 'bg-festa-aquaClar text-festa-aquaObscur' :
-                                        pedido.estado === 'ENTREGADO' ? 'bg-festa-verdClar text-festa-verdObscur' : pedido.estado === 'PENDIENTE_REVISION' ? 'bg-festa-grocClar text-festa-grocObscur' : 'bg-festa-fucsiaClar text-festa-fucsiaObscur'}
-                                        `}>
-                                        {pedido.estado}
-                                    </Text>
-                                </HStack>
+                            <Card className="px-3 py-1 rounded-2xl" key={pedido.id}>
+                                <PedidoItem pedido={pedido} isDark={isDark} />
                             </Card>
                         ))
                     )}
                 </VStack>
-
+                <View />
             </VStack>
         </ScrollView>
     );

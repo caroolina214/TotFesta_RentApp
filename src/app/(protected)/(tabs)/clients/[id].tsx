@@ -1,15 +1,17 @@
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ScrollView, View, useColorScheme, Pressable, useWindowDimensions } from 'react-native';
-import { Text } from '@/src/components/ui/text';
+import ConfirmDialog from '@/src/components/custom/ConfirmDialog';
 import { Card } from '@/src/components/ui/card';
-import { VStack } from '@/src/components/ui/vstack';
 import { HStack } from '@/src/components/ui/hstack';
-import { Cliente, DireccionCliente, PedidoConDetalle } from '@/src/types/types';
-import { clientes, direccionesCliente, listPedidosResumen } from '@/src/types/types';
+import { Text } from '@/src/components/ui/text';
+import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
-import { Phone, Mail, FileText, MapPin, Pencil, UserX, Package, ChevronLeft } from 'lucide-react-native';
+import { clientService } from '@/src/services/clientService';
+import { Cliente, DireccionCliente, PedidoConDetalle, clientes, direccionesCliente, listPedidosResumen } from '@/src/types/types';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { ChevronLeft, FileText, IdCard, Mail, MapPin, Package, Pencil, Phone, UserCheck, UserX } from 'lucide-react-native';
+import { useCallback, useState } from 'react';
+import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PedidoItem from '@/src/components/custom/PedidoItem';
 
 export default function ClientDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,18 +26,22 @@ export default function ClientDetailScreen() {
     const [direccion, setDireccion] = useState<DireccionCliente | null>(null);
     const [pedidos, setPedidos] = useState<PedidoConDetalle[]>([]);
 
-    useEffect(() => {
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    useFocusEffect(useCallback(() => {
         const found = clientes.find(c => c.id === Number(id));
+
         if (found) setClient(found);
 
         const dir = direccionesCliente.find(d => d.clienteId === Number(id));
+
         if (dir) setDireccion(dir);
 
         listPedidosResumen().then(data => {
             const clientPedidos = data.filter(p => p.clienteId === Number(id));
             setPedidos(clientPedidos);
         });
-    }, [id]);
+    }, [id]));
 
     const teActivos = pedidos.some(p =>
         p.estado === 'ENTREGADO' ||
@@ -87,12 +93,28 @@ export default function ClientDetailScreen() {
                                     <Text style={{ color: AppColors.AquaObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>Editar</Text>
                                 </Pressable>
                                 <Pressable
-                                    disabled={teActivos}
-                                    style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: teActivos ? AppColors.BaseClar : AppColors.FucsiaClar, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, opacity: teActivos ? 0.5 : 1, shadowColor: teActivos ? 'transparent' : AppColors.BaseObscur, shadowOffset: { width: 1, height: 2 }, shadowOpacity: teActivos ? 0 : 0.3, shadowRadius: 2, elevation: teActivos ? 0 : 3 }}
+                                    onPress={() => setShowConfirm(true)}
+                                    disabled={teActivos && client.activo}
+                                    style={{
+                                        flexDirection: 'row', alignItems: 'center', gap: 6,
+                                        backgroundColor: teActivos && client.activo ? AppColors.BaseClar : client.activo ? AppColors.FucsiaClar : AppColors.VerdClar,
+                                        paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+                                        opacity: teActivos && client.activo ? 0.5 : 1,
+                                        shadowColor: teActivos && client.activo ? 'transparent' : AppColors.BaseObscur,
+                                        shadowOffset: { width: 1, height: 2 },
+                                        shadowOpacity: teActivos && client.activo ? 0 : 0.3,
+                                        shadowRadius: 2,
+                                        elevation: teActivos && client.activo ? 0 : 3,
+                                    }}
                                 >
-                                    <UserX size={14} color={teActivos ? AppColors.BaseMig : AppColors.FucsiaObscur} />
-                                    <Text style={{ color: teActivos ? AppColors.BaseMig : AppColors.FucsiaObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>
-                                        {teActivos ? 'Té pedidos actius' : 'Desactivar'}
+                                    {teActivos && client.activo
+                                        ? <UserX size={14} color={AppColors.BaseMig} />
+                                        : client.activo
+                                            ? <UserX size={14} color={AppColors.FucsiaObscur} />
+                                            : <UserCheck size={14} color={AppColors.VerdObscur} />
+                                    }
+                                    <Text style={{ color: teActivos && client.activo ? AppColors.BaseMig : client.activo ? AppColors.FucsiaObscur : AppColors.VerdObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>
+                                        {teActivos && client.activo ? 'Té pedidos actius' : client.activo ? 'Desactivar' : 'Activar'}
                                     </Text>
                                 </Pressable>
                             </HStack>
@@ -131,12 +153,28 @@ export default function ClientDetailScreen() {
                                 <Text style={{ color: AppColors.AquaObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>Editar</Text>
                             </Pressable>
                             <Pressable
-                                disabled={teActivos}
-                                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: teActivos ? AppColors.BaseClar : AppColors.FucsiaClar, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, opacity: teActivos ? 0.5 : 1, shadowColor: teActivos ? 'transparent' : AppColors.BaseObscur, shadowOffset: { width: 1, height: 2 }, shadowOpacity: teActivos ? 0 : 0.3, shadowRadius: 2, elevation: teActivos ? 0 : 3 }}
+                                onPress={() => setShowConfirm(true)}
+                                disabled={teActivos && client.activo}
+                                style={{
+                                    flexDirection: 'row', alignItems: 'center', gap: 6,
+                                    backgroundColor: teActivos && client.activo ? AppColors.BaseClar : client.activo ? AppColors.FucsiaClar : AppColors.VerdClar,
+                                    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+                                    opacity: teActivos && client.activo ? 0.5 : 1,
+                                    shadowColor: teActivos && client.activo ? 'transparent' : AppColors.BaseObscur,
+                                    shadowOffset: { width: 1, height: 2 },
+                                    shadowOpacity: teActivos && client.activo ? 0 : 0.3,
+                                    shadowRadius: 2,
+                                    elevation: teActivos && client.activo ? 0 : 3,
+                                }}
                             >
-                                <UserX size={14} color={teActivos ? AppColors.BaseMig : AppColors.FucsiaObscur} />
-                                <Text style={{ color: teActivos ? AppColors.BaseMig : AppColors.FucsiaObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>
-                                    {teActivos ? 'Té pedidos actius' : 'Desactivar'}
+                                {teActivos && client.activo
+                                    ? <UserX size={14} color={AppColors.BaseMig} />
+                                    : client.activo
+                                        ? <UserX size={14} color={AppColors.FucsiaObscur} />
+                                        : <UserCheck size={14} color={AppColors.VerdObscur} />
+                                }
+                                <Text style={{ color: teActivos && client.activo ? AppColors.BaseMig : client.activo ? AppColors.FucsiaObscur : AppColors.VerdObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>
+                                    {teActivos && client.activo ? 'Té pedidos actius' : client.activo ? 'Desactivar' : 'Activar'}
                                 </Text>
                             </Pressable>
                         </HStack>
@@ -167,7 +205,7 @@ export default function ClientDetailScreen() {
                         )}
                         {client.nifCif && (
                             <HStack space="sm" style={{ alignItems: 'center' }}>
-                                <FileText size={16} color={AppColors.Morat} />
+                                <IdCard size={16} color={AppColors.Morat} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
                                     {client.nifCif}
                                 </Text>
@@ -210,31 +248,40 @@ export default function ClientDetailScreen() {
                                 Aquest client no té pedidos
                             </Text>
                         ) : (
-                            pedidos.slice(0, 5).map(pedido => {
-                                const colors = getEstadoBg(pedido.estado);
-                                return (
-                                    <HStack key={pedido.id} style={{ justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: AppColors.MoratClar, paddingTop: 10 }}>
-                                        <VStack space="xs" className="pb-1.5">
-                                            <Text className="text-sm font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
-                                                {pedido.codigo}
-                                            </Text>
-                                            <Text className="text-xs font-schibsted text-festa-baseMig">
-                                                {pedido.fechaInicio} → {pedido.fechaFin}
-                                            </Text>
-                                        </VStack>
-                                        <View style={{ backgroundColor: colors.bg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 }}>
-                                            <Text style={{ fontSize: 11, fontFamily: 'SchibstedGrotesk', color: colors.text }}>
-                                                {pedido.estado}
-                                            </Text>
-                                        </View>
-                                    </HStack>
-                                );
-                            })
+                            <VStack space="sm">
+                                {pedidos.slice(0, 5).map(pedido => (
+                                    <PedidoItem
+                                        key={pedido.id}
+                                        pedido={pedido}
+                                        isDark={isDark}
+                                        hasBorderTop={true}
+                                    />
+                                ))}
+                            </VStack>
                         )}
                     </VStack>
                 </Card>
 
             </VStack>
+
+            <ConfirmDialog
+                visible={showConfirm}
+                title={client.activo ? 'Desactivar client' : 'Activar client'}
+                message={client.activo
+                    ? `Vols desactivar ${client.nombre}?`
+                    : `Vols activar ${client.nombre}?`
+                }
+                confirmText={client.activo ? 'Desactivar' : 'Activar'}
+                onConfirm={() => {
+                    clientService.update(
+                        Number(id),
+                        { ...client, activo: !client.activo },
+                        direccion ?? { linea1: '', ciudad: '', codigoPostal: '', esPrincipal: true }
+                    );
+                    router.back();
+                }}
+                onClose={() => setShowConfirm(false)}
+            />
         </ScrollView>
     );
 }

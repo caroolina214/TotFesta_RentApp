@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { clientSchema, ClientFormValues } from '@/src/schemas/client.schema';
 import { clientes, direccionesCliente } from '@/src/types/types';
+import { clientService } from '../services/clientService';
 
 export const defaultFormValues: ClientFormValues = {
     nombre: '',
@@ -68,8 +69,25 @@ export function useClientForm(id?: string) {
             isEdit ? 'Guardar canvis' : 'Crear client',
             isEdit ? 'Vols guardar els canvis realitzats?' : 'Vols crear aquest client?',
             () => {
-                console.log('submit', data);
-                // TODO: connectar amb Supabase a la tasca 4
+                if (isEdit) {
+                    clientService.update(Number(id), {
+                        nombre: data.nombre,
+                        nifCif: data.nifCif,
+                        telefono: data.telefono,
+                        email: data.email,
+                        notas: data.notas,
+                        activo: data.activo,
+                    }, data.direccion);
+                } else {
+                    clientService.create({
+                        nombre: data.nombre,
+                        nifCif: data.nifCif,
+                        telefono: data.telefono,
+                        email: data.email,
+                        notas: data.notas,
+                        activo: data.activo,
+                    }, data.direccion);
+                }
                 router.back();
             }
         );

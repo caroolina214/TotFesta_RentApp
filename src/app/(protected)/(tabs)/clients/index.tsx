@@ -11,6 +11,8 @@ import { Plus, Search, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 
 export default function ClientsScreen() {
@@ -20,10 +22,6 @@ export default function ClientsScreen() {
 
     const [clients, setClients] = useState<Cliente[]>([]);
     const [search, setSearch] = useState('');
-
-    useEffect(() => {
-        listClientes().then(setClients);
-    }, []);
 
     const filtered = clients.filter(c =>
         c.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -35,10 +33,12 @@ export default function ClientsScreen() {
     const { width } = useWindowDimensions();
     const isSmall = width < 640;
 
-    useEffect(() => {
-        listClientes().then(setClients);
-        listPedidosResumen().then(setPedidos);
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            listClientes().then(setClients);
+            listPedidosResumen().then(setPedidos);
+        }, [])
+    );
 
     const getPedidosCount = (clientId: number) =>
         pedidos.filter(p => p.clienteId === clientId).length;
