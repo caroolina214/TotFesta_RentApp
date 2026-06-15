@@ -11,7 +11,7 @@ import { useClientForm } from '@/src/hooks/useClientForm';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, RotateCcw, Save } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
-import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { ScrollView, View, useColorScheme, Pressable, useWindowDimensions, KeyboardAvoidingView, Platform } from 'react-native';
 import RequiredLabel from '@/src/components/custom/RequiredLabel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,7 +30,10 @@ export default function ClientFormScreen() {
     const textareaClass = `border-festa-baseMig data-[focus=true]:border-festa-morat ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`;
 
     return (
-        <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
             {/* Capçalera sticky */}
             <View style={{
                 flexDirection: 'row',
@@ -186,6 +189,6 @@ export default function ClientFormScreen() {
                 onConfirm={confirmDialog.onConfirm}
                 onClose={closeDialog}
             />
-        </View>
+        </KeyboardAvoidingView>
     );
 }
