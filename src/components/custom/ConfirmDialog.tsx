@@ -1,4 +1,4 @@
-import { AppButton } from '@/src/components/custom';
+import AppButton from '@/src/components/custom/AppButton';
 import { Text } from '@/src/components/ui/text';
 import { AppColors } from '@/src/constants/colors';
 import { Modal, Pressable, useColorScheme, View } from 'react-native';

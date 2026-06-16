@@ -7,7 +7,7 @@ import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { listPedidosActivos, listPedidosResumen, PedidoConDetalle } from '@/src/types/types';
 import { router } from 'expo-router';
-import { ArrowRight, Package, Users } from 'lucide-react-native';
+import { ArrowRight, Package, User, Users, Settings } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +27,7 @@ export default function HomeScreen() {
         month: 'long',
     });
 
-    const { name } = useUserStore();
+    const { name, role } = useUserStore();
 
     useEffect(() => {
         listPedidosActivos().then(setPedidosActivos);
@@ -87,25 +87,65 @@ export default function HomeScreen() {
                     </Card>
                 </HStack>
 
-                {/* Accés ràpid a Clients */}
-                <Pressable onPress={() => router.push('/clients')}>
-                    <Card className="p-4 rounded-2xl bg-festa-moratClar">
-                        <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-                            <HStack space="md" style={{ alignItems: 'center' }}>
-                                <Users size={24} color={AppColors.Morat} />
-                                <VStack>
-                                    <Text className="text-base font-schibsted text-festa-moratObscur">
-                                        Gestió de Clients
-                                    </Text>
-                                    <Text className="text-xs font-schibsted text-festa-morat">
-                                        Veure, crear i editar clients
-                                    </Text>
-                                </VStack>
+                {/* Accés ràpid */}
+                <VStack space="sm">
+                    {role === 'ADMIN' && (
+                        <Pressable onPress={() => router.push('/clients')}>
+                            <Card className="p-4 rounded-2xl bg-festa-moratClar">
+                                <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <HStack space="md" style={{ alignItems: 'center' }}>
+                                        <Users size={24} color={AppColors.Morat} />
+                                        <VStack>
+                                            <Text className="text-base font-schibsted text-festa-baseObscur">
+                                                Gestió de Clients
+                                            </Text>
+                                            <Text className="text-xs font-schibsted text-festa-morat">
+                                                Veure, crear i editar clients
+                                            </Text>
+                                        </VStack>
+                                    </HStack>
+                                    <ArrowRight size={20} color={AppColors.Morat} />
+                                </HStack>
+                            </Card>
+                        </Pressable>
+                    )}
+                    <Pressable onPress={() => router.push('/(protected)/profile')}>
+                        <Card className="p-4 rounded-2xl bg-festa-aquaClar">
+                            <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                                <HStack space="md" style={{ alignItems: 'center' }}>
+                                    <User size={24} color={AppColors.Aqua} />
+                                    <VStack>
+                                        <Text className="text-base font-schibsted text-festa-baseObscur">
+                                            El meu perfil
+                                        </Text>
+                                        <Text className="text-xs font-schibsted text-festa-aqua">
+                                            Veure i editar les meues dades
+                                        </Text>
+                                    </VStack>
+                                </HStack>
+                                <ArrowRight size={20} color={AppColors.Aqua} />
                             </HStack>
-                            <ArrowRight size={20} color={AppColors.Morat} />
-                        </HStack>
-                    </Card>
-                </Pressable>
+                        </Card>
+                    </Pressable>
+                    <Pressable onPress={() => router.push('/(protected)/preferences')}>
+                        <Card className="p-4 rounded-2xl bg-festa-grocClar">
+                            <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                                <HStack space="md" style={{ alignItems: 'center' }}>
+                                    <Settings size={24} color={AppColors.GrocObscur} />
+                                    <VStack>
+                                        <Text className="text-base font-schibsted text-festa-baseObscur">
+                                            Preferències
+                                        </Text>
+                                        <Text className="text-xs font-schibsted text-festa-grocObscur">
+                                            Tema i configuració general
+                                        </Text>
+                                    </VStack>
+                                </HStack>
+                                <ArrowRight size={20} color={AppColors.GrocObscur} />
+                            </HStack>
+                        </Card>
+                    </Pressable>
+                </VStack>
 
                 {/* Operativa del dia */}
                 <VStack space="md">

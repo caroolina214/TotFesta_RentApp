@@ -1,4 +1,4 @@
-import { ClientStatusBadge } from '@/src/components/custom';
+import ClientStatusBadge from '@/src/components/custom/ClientStatusBadge';
 import { Card } from '@/src/components/ui/card';
 import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';

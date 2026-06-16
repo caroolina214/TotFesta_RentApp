@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         role: user.roleId === 2 ? 'ADMIN' : 'NORMAL',
                     });
                 }
+                router.replace('/(protected)/(tabs)');
             }
             setIsLoading(false);
         });
