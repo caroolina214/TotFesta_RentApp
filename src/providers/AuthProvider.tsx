@@ -52,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = useCallback(async () => {
         await AsyncStorage.removeItem(SESSION_KEY);
+        useUserStore.getState().clearUser();
         setIsAuthenticated(false);
         router.replace('/login');
     }, []);

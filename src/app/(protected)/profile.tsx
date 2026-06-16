@@ -5,9 +5,10 @@ import { Input, InputField } from '@/src/components/ui/input';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
+import { useAuth } from '@/src/providers/AuthProvider';
 import { useUserStore } from '@/src/stores/userStore';
 import { router } from 'expo-router';
-import { ChevronLeft, Mail, Save, Shield } from 'lucide-react-native';
+import { ChevronLeft, LogOut, Mail, Save, Shield } from 'lucide-react-native';
 import { useState } from 'react';
 import { ScrollView, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +18,7 @@ export default function ProfileScreen() {
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
     const { name, email, role, updateName } = useUserStore();
+    const { logout } = useAuth();
     const [editName, setEditName] = useState(name);
 
     const handleSave = () => {
@@ -87,6 +89,16 @@ export default function ProfileScreen() {
                         </HStack>
                     </VStack>
                 </Card>
+                <AppButton
+                    label="Tancar sessió"
+                    onPress={logout}
+                    bgColor={AppColors.FucsiaClar}
+                    textColor={AppColors.FucsiaObscur}
+                    iconColor={AppColors.FucsiaObscur}
+                    icon={LogOut}
+                    centered
+                    shadow
+                />
             </VStack>
         </ScrollView>
     );
