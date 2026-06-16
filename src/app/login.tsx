@@ -1,13 +1,18 @@
 import { AppButton, DiscoBall } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
-import { FormControl, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
+import { FormControl, FormControlError, FormControlErrorText, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
 import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
-import { authStore } from '@/src/store/authStore';
+import { useAuth } from '@/src/providers/AuthProvider';
+import { LoginFormValues, loginSchema } from '@/src/schemas/auth.schema';
+import { useUserStore } from '@/src/stores/userStore';
+import { usuarios } from '@/src/types/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Platform, Pressable, ScrollView, useColorScheme, useWindowDimensions, View } from 'react-native';
 import { AppColors } from '../constants/colors';
 
@@ -15,18 +20,27 @@ export default function LoginPage() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const { control, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { email: '', password: '' },
+    });
 
     const { width, height } = useWindowDimensions();
     const isWeb = Platform.OS === 'web';
     const isTallScreen = height > 800;
 
-    const handleLogin = () => {
-        authStore.login();
-        router.replace('/(protected)/(tabs)');
-    };
+    const { login } = useAuth();
+    const { setUser } = useUserStore();
+
+    const handleLogin = handleSubmit(async (data: LoginFormValues) => {
+        const success = await login(data.email, data.password);
+        if (success) {
+            const user = usuarios.find(u => u.email === data.email)!;
+            setUser({ id: user.id, name: user.name, email: user.email, role: user.roleId === 2 ? 'ADMIN' : 'NORMAL' });
+            router.replace('/(protected)/(tabs)');
+        }
+    });
 
     return (
         <ScrollView
@@ -60,51 +74,47 @@ export default function LoginPage() {
                     })}
                 >
                     <VStack space="2xl">
-                        <FormControl>
+                        <FormControl isInvalid={!!errors.email}>
                             <FormControlLabel>
                                 <FormControlLabelText>Correu electrònic</FormControlLabelText>
                             </FormControlLabel>
-                            <Input
-                                className="bg-festa-baseClar text-festa-baseObscur
-                                        border-festa-baseMig
-                                        data-[focus=true]:border-festa-aqua
-                                        data-[focus=true]:hover:border-festa-aqua 
-                                        data-[focus=true]:web:ring-0"
-                            >
-                                <InputField
-                                    placeholder="exemple@correu.com"
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    value={email}
-                                    onChangeText={setEmail}
-                                />
-                            </Input>
+                            <Controller control={control} name="email" render={({ field: { onChange, value } }) => (
+                                <Input className="bg-festa-baseClar text-festa-baseObscur border-festa-baseMig data-[focus=true]:border-festa-aqua data-[focus=true]:hover:border-festa-aqua data-[focus=true]:web:ring-0">
+                                    <InputField
+                                        placeholder="exemple@correu.com"
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        value={value}
+                                        onChangeText={onChange}
+                                    />
+                                </Input>
+                            )} />
+                            {errors.email && <FormControlError><FormControlErrorText className="font-schibsted text-xs">{errors.email.message}</FormControlErrorText></FormControlError>}
                         </FormControl>
-                        <FormControl>
+                        <FormControl isInvalid={!!errors.password}>
                             <FormControlLabel>
                                 <FormControlLabelText>Contrasenya</FormControlLabelText>
                             </FormControlLabel>
-                            <Input
-                                className="bg-festa-baseClar text-festa-baseObscur
-                                        border-festa-baseMig
-                                        data-[focus=true]:border-festa-aqua
-                                        data-[focus=true]:hover:border-festa-aqua
-                                        data-[focus=true]:web:ring-0"
-                            >
-                                <InputField
-                                    placeholder="********"
-                                    secureTextEntry={!showPassword}
-                                    value={password}
-                                    autoCapitalize="none"
-                                    onChangeText={setPassword}
-                                />
-                                <InputSlot
-                                    onPress={() => setShowPassword(!showPassword)}
-                                    className="pr-3"
-                                >
-                                    <InputIcon as={showPassword ? EyeOffIcon : EyeIcon} />
-                                </InputSlot>
-                            </Input>
+                            <Controller control={control} name="password" render={({ field: { onChange, value } }) => (
+                                <Input className="bg-festa-baseClar text-festa-baseObscur border-festa-baseMig data-[focus=true]:border-festa-aqua data-[focus=true]:hover:border-festa-aqua data-[focus=true]:web:ring-0">
+                                    <InputField
+                                        placeholder="********"
+                                        secureTextEntry={!showPassword}
+                                        value={value}
+                                        autoCapitalize="none"
+                                        onChangeText={onChange}
+                                    />
+                                    <InputSlot onPress={() => setShowPassword(!showPassword)} className="pr-3">
+                                        <InputIcon as={showPassword ? EyeOffIcon : EyeIcon} />
+                                    </InputSlot>
+                                </Input>
+                            )} />
+                            {errors.password &&
+                                <FormControlError>
+                                    <FormControlErrorText className="font-schibsted text-xs">
+                                        {errors.password.message}
+                                    </FormControlErrorText>
+                                </FormControlError>}
                         </FormControl>
                         <AppButton
                             label="Iniciar sessió"

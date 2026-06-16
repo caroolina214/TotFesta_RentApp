@@ -11,6 +11,7 @@ import { ArrowRight, Package, Users } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useUserStore } from '@/src/stores/userStore';
 
 export default function HomeScreen() {
     const colorScheme = useColorScheme();
@@ -25,6 +26,8 @@ export default function HomeScreen() {
         day: 'numeric',
         month: 'long',
     });
+
+    const { name } = useUserStore();
 
     useEffect(() => {
         listPedidosActivos().then(setPedidosActivos);
@@ -50,7 +53,7 @@ export default function HomeScreen() {
                 {/* Capçalera */}
                 <VStack space="xs">
                     <Text className="text-3xl font-fuzzy-bold text-festa-aqua">
-                        Hola, Admin! 👋
+                        Hola, {name}! 👋
                     </Text>
                     <Text className="text-sm font-schibsted text-festa-baseMig capitalize">
                         {today}

@@ -1,10 +1,10 @@
+import '@/global.css';
 import { GluestackUIProvider } from '@/src/components/ui/gluestack-ui-provider';
+import { AuthProvider } from '@/src/providers/AuthProvider';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { SplashScreen } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import '@/global.css';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +28,9 @@ export default function RootLayout() {
 
     return (
         <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
-            <Stack screenOptions={{ headerShown: false }} />
+            <AuthProvider>
+                <Stack screenOptions={{ headerShown: false }} />
+            </AuthProvider>
         </GluestackUIProvider>
     );
 }

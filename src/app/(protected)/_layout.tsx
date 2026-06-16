@@ -1,9 +1,10 @@
-import { authStore } from '@/src/store/authStore';
+import { useAuth } from '@/src/providers/AuthProvider';
 import { Redirect, Stack } from 'expo-router';
-import { useState } from 'react';
 
 export default function ProtectedLayout() {
-    const [isAuthenticated] = useState(authStore.isAuthenticated());
+    const { isAuthenticated, isLoading } = useAuth();
+
+    if (isLoading) return null;
 
     if (!isAuthenticated) {
         return <Redirect href="/login" />;
