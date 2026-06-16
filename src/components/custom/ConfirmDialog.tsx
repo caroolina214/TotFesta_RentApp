@@ -1,6 +1,7 @@
-import { Modal, View, Pressable, useColorScheme } from 'react-native';
+import { AppButton } from '@/src/components/custom';
 import { Text } from '@/src/components/ui/text';
 import { AppColors } from '@/src/constants/colors';
+import { Modal, Pressable, useColorScheme, View } from 'react-native';
 
 interface ConfirmDialogProps {
     visible: boolean;
@@ -41,18 +42,23 @@ export default function ConfirmDialog({
                         {message}
                     </Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
-                        <Pressable
+                        <AppButton
+                            label={cancelText}
                             onPress={onClose}
-                            style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: AppColors.BaseMig }}
-                        >
-                            <Text className="font-schibsted text-festa-baseMig">{cancelText}</Text>
-                        </Pressable>
-                        <Pressable
+                            textColor={AppColors.BaseObscur}
+                            bgColor={AppColors.BaseMig}
+                            outlined
+                            shadow
+                        />
+                        <AppButton
+                            label={confirmText}
                             onPress={() => { onClose(); setTimeout(() => onConfirm(), 100); }}
-                            style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: AppColors.Aqua }}
-                        >
-                            <Text className="font-schibsted" style={{ color: AppColors.BaseObscur }}>{confirmText}</Text>
-                        </Pressable>
+                            bgColor={AppColors.Aqua}
+                            textColor={AppColors.BaseObscur}
+                            outlined
+                            outlineColor={AppColors.AquaObscur}
+                            shadow
+                        />
                     </View>
                 </Pressable>
             </Pressable>

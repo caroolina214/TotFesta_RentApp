@@ -1,4 +1,4 @@
-import ClientCard from '@/src/components/custom/ClientCard';
+import { AppButton, ClientCard } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
 import { HStack } from '@/src/components/ui/hstack';
 import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input';
@@ -6,14 +6,11 @@ import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { Cliente, PedidoConDetalle, listClientes, listPedidosResumen } from '@/src/types/types';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Plus, Search, X } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
-
 
 export default function ClientsScreen() {
     const colorScheme = useColorScheme();
@@ -48,15 +45,16 @@ export default function ClientsScreen() {
 
             <View style={{ padding: 16, paddingBottom: 8 }}>
                 <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <Text className="text-2xl font-fuzzy-bold text-festa-aqua">Clients</Text>
+                    <Text className="text-3xl font-fuzzy-bold text-festa-aqua">Clients</Text>
                     {!isSmall && (
-                        <Pressable
+                        <AppButton
+                            label="Afegir client"
                             onPress={() => router.push('/(protected)/(tabs)/clients/new')}
-                            style={{ backgroundColor: AppColors.Aqua, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}
-                        >
-                            <Plus size={16} color={AppColors.BaseObscur} />
-                            <Text style={{ color: AppColors.BaseObscur, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>Afegir client</Text>
-                        </Pressable>
+                            icon={Plus}
+                            bgColor={AppColors.Aqua}
+                            textColor={AppColors.BaseObscur}
+                            shadow
+                        />
                     )}
                 </HStack>
 

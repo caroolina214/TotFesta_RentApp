@@ -1,4 +1,4 @@
-import ConfirmDialog from '@/src/components/custom/ConfirmDialog';
+import { AppButton, ConfirmDialog, RequiredLabel } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
 import { FormControl, FormControlError, FormControlErrorText, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
 import { HStack } from '@/src/components/ui/hstack';
@@ -7,12 +7,11 @@ import { Text } from '@/src/components/ui/text';
 import { Textarea, TextareaInput } from '@/src/components/ui/textarea';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
-import { useClientForm } from '@/src/hooks/useClientForm';
+import { useClientForm } from '@/src/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, RotateCcw, Save } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
-import { ScrollView, View, useColorScheme, Pressable, useWindowDimensions, KeyboardAvoidingView, Platform } from 'react-native';
-import RequiredLabel from '@/src/components/custom/RequiredLabel';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -39,8 +38,9 @@ export default function ClientFormScreen() {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: isSmall ? 16 : 30,
+                paddingTop: insets.top + 12,
+                paddingBottom: 12,
+                paddingHorizontal: isSmall ? 10 : 30,
                 backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? AppColors.MoratObscur : AppColors.BaseMig,
@@ -52,30 +52,24 @@ export default function ClientFormScreen() {
                     </Text>
                 </Pressable>
                 <HStack space="sm">
-                    <Pressable
+                    <AppButton
+                        label="Desfer"
                         onPress={handleReset}
-                        style={{
-                            flexDirection: 'row', alignItems: 'center', gap: 6,
-                            backgroundColor: isDirty ? AppColors.GrocClar : AppColors.BaseClar,
-                            paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-                            opacity: isDirty ? 1 : 0.4,
-                        }}
-                    >
-                        <RotateCcw size={14} color={isDirty ? AppColors.GrocObscur : AppColors.BaseMig} />
-                        <Text style={{ color: isDirty ? AppColors.GrocObscur : AppColors.BaseMig, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>Desfer</Text>
-                    </Pressable>
-                    <Pressable
-                        onPress={isDirty ? handleSave : undefined}
-                        style={{
-                            flexDirection: 'row', alignItems: 'center', gap: 6,
-                            backgroundColor: isDirty ? AppColors.AquaClar : AppColors.BaseClar,
-                            paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-                            opacity: isDirty ? 1 : 0.4,
-                        }}
-                    >
-                        <Save size={14} color={isDirty ? AppColors.AquaObscur : AppColors.BaseMig} />
-                        <Text style={{ color: isDirty ? AppColors.AquaObscur : AppColors.BaseMig, fontFamily: 'SchibstedGrotesk', fontSize: 13 }}>Guardar</Text>
-                    </Pressable>
+                        icon={RotateCcw}
+                        bgColor={isDirty ? AppColors.GrocClar : AppColors.BaseClar}
+                        textColor={isDirty ? AppColors.GrocObscur : AppColors.BaseMig}
+                        opacity={isDirty ? 1 : 0.4}
+                        shadow={isDirty}
+                    />
+                    <AppButton
+                        label="Guardar"
+                        onPress={isDirty ? handleSave : () => { }}
+                        icon={Save}
+                        bgColor={isDirty ? AppColors.AquaClar : AppColors.BaseClar}
+                        textColor={isDirty ? AppColors.AquaObscur : AppColors.BaseMig}
+                        opacity={isDirty ? 1 : 0.4}
+                        shadow={isDirty}
+                    />
                 </HStack>
             </View>
 

@@ -1,12 +1,12 @@
+import { ClientStatusBadge } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
-import { Text } from '@/src/components/ui/text';
 import { HStack } from '@/src/components/ui/hstack';
+import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
-import { Pressable, View, useColorScheme } from 'react-native';
-import { Phone, Mail, Package } from 'lucide-react-native';
 import { AppColors } from '@/src/constants/colors';
 import { Cliente } from '@/src/types/types';
-import { router } from 'expo-router';
+import { Mail, Package, Phone } from 'lucide-react-native';
+import { Pressable, View, useColorScheme } from 'react-native';
 
 interface ClientCardProps {
     client: Cliente;
@@ -69,20 +69,7 @@ export default function ClientCard({ client, pedidosCount, isSmall, onPress }: C
                     </VStack>
 
                     <VStack space="xs" style={{ alignItems: 'flex-end' }}>
-                        <View style={{
-                            backgroundColor: client.activo ? AppColors.VerdClar : AppColors.FucsiaClar,
-                            paddingHorizontal: 8,
-                            paddingVertical: 3,
-                            borderRadius: 20,
-                        }}>
-                            <Text style={{
-                                fontSize: 11,
-                                fontFamily: 'SchibstedGrotesk',
-                                color: client.activo ? AppColors.VerdObscur : AppColors.FucsiaObscur,
-                            }}>
-                                {client.activo ? 'Actiu' : 'Inactiu'}
-                            </Text>
-                        </View>
+                        <ClientStatusBadge activo={client.activo} />
                         {isSmall && (
                             <View style={{
                                 backgroundColor: AppColors.AquaClar,

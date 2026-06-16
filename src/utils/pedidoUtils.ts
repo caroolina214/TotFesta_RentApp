@@ -16,7 +16,7 @@ const estadoColors: Record<EstadoPedido, { bg: string; text: string }> = {
     DEVUELTO: { bg: AppColors.GrocClar, text: AppColors.GrocObscur },
     PENDIENTE_REVISION: { bg: AppColors.FucsiaClar, text: AppColors.FucsiaObscur },
     FINALIZADO: { bg: AppColors.MoratClar, text: AppColors.MoratObscur },
-    CANCELADO: { bg: AppColors.BaseClar, text: AppColors.BaseMig },
+    CANCELADO: { bg: AppColors.BaseMig, text: AppColors.BaseObscur },
 };
 
 export const getEstadoBg = (estado: EstadoPedido) => {

@@ -1,3 +1,4 @@
+import { PedidoItem } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
 import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
@@ -10,7 +11,6 @@ import { ArrowRight, Package, Users } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import PedidoItem from '@/src/components/custom/PedidoItem';
 
 export default function HomeScreen() {
     const colorScheme = useColorScheme();

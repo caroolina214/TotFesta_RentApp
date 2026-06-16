@@ -1,19 +1,17 @@
-import { Button, ButtonText } from '@/src/components/ui/button';
+import { AppButton, DiscoBall } from '@/src/components/custom';
+import { Card } from '@/src/components/ui/card';
 import { FormControl, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
-import { Input, InputField, InputSlot, InputIcon } from '@/src/components/ui/input';
+import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
-import { Card } from '@/src/components/ui/card';
-import { useState } from 'react';
-import { useColorScheme, ScrollView, Pressable, View, Platform } from 'react-native';
-import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
-import DiscoBall from '@/src/components/custom/DiscoBall';
-import { AppColors } from '../constants/colors';
-import { useWindowDimensions } from 'react-native';
 import { authStore } from '@/src/store/authStore';
 import { router } from 'expo-router';
+import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
+import { useState } from 'react';
+import { Platform, Pressable, ScrollView, useColorScheme, useWindowDimensions, View } from 'react-native';
+import { AppColors } from '../constants/colors';
 
-export default function LoginScreen() {
+export default function LoginPage() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
@@ -108,9 +106,15 @@ export default function LoginScreen() {
                                 </InputSlot>
                             </Input>
                         </FormControl>
-                        <Button onPress={handleLogin} className="mt-2 bg-festa-aqua">
-                            <ButtonText className="text-festa-baseObscur">Iniciar sessió</ButtonText>
-                        </Button>
+                        <AppButton
+                            label="Iniciar sessió"
+                            onPress={handleLogin}
+                            bgColor={AppColors.Aqua}
+                            textColor={AppColors.BaseObscur}
+                            fontSize={15}
+                            centered
+                            shadow
+                        />
                     </VStack>
                 </Card>
                 <Pressable className="mt-6">
