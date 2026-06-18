@@ -11,6 +11,8 @@ Aplicació de lloguer d'articles per a festes i celebracions.
 - TypeScript
 - Zustand
 - AsyncStorage
+- Supabase
+- TanStack React Query
 
 ## Estructura
 
@@ -18,13 +20,14 @@ Aplicació de lloguer d'articles per a festes i celebracions.
 src/
 ├── app/          # Pantalles i rutes
 ├── components/   # Components reutilitzables
+├── config/       # Configuració de Supabase
 ├── constants/    # Colors i tema
 ├── hooks/        # Hooks personalitzats
 ├── providers/    # Context API providers
 ├── schemas/      # Esquemes de validació Zod
-├── services/     # Serveis de dades
+├── services/     # Serveis de dades (Supabase)
 ├── stores/       # Zustand stores
-├── types/        # TypeScript types i dades mock
+├── types/        # TypeScript types
 └── utils/        # Funcions utilitàries
 ```
 
@@ -34,6 +37,7 @@ src/
 - `task-project-setup` — Tasca 1: configuració del projecte
 - `task-client-management` — Tasca 2: manteniment de clients
 - `task-app-state` — Tasca 3: estat de l'aplicació
+- `task-backend-react-query` — Tasca 4: consum de backend
 
 <br>
 
@@ -68,3 +72,14 @@ src/
 - Tema persistent entre sessions
 - Navegació diferenciada per rol (Admin/Operari)
 - Home mostra informació de l'usuari autenticat
+
+### Tasca 4: Consum de backend i React Query
+
+- Supabase configurat com a backend
+- Base de dades amb taules de clients, pedidos, productes i usuaris
+- Eliminació de dades mock del frontend
+- Serveis centralitzats per a clients i pedidos
+- React Query per a gestió de dades (useQuery i useMutation)
+- Loading states i error handling a totes les pantalles
+- Cacheo automàtic i invalidació de queries
+- CRUD de clients connectat a Supabase
