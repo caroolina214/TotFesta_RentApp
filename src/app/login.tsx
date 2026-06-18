@@ -127,7 +127,7 @@ export default function LoginPage() {
                         />
                     </VStack>
                 </Card>
-                <Pressable className="mt-6">
+                <Pressable className="mt-6" onPress={() => router.push('/register')}>
                     <Text className="text-festa-baseMig text-sm mb-7">
                         No tens compte?{' '}
                         <Text className={`${isDark ? 'text-festa-verd' : 'text-festa-verdObscur'}`}>Registra't</Text>
