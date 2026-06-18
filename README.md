@@ -38,6 +38,7 @@ src/
 - `task-client-management` — Tasca 2: manteniment de clients
 - `task-app-state` — Tasca 3: estat de l'aplicació
 - `task-backend-react-query` — Tasca 4: consum de backend
+- `task-storage-login` — Tasca 5: storage i login
 
 <br>
 
@@ -83,3 +84,12 @@ src/
 - Loading states i error handling a totes les pantalles
 - Cacheo automàtic i invalidació de queries
 - CRUD de clients connectat a Supabase
+
+### Tasca 5: Storage i Login
+
+- Autenticació real amb Supabase Auth (login i registre)
+- Pantalla de registre amb validació i sincronització a la taula usuarios
+- Persistència de sessió gestionada per Supabase Auth
+- Avatar de perfil amb Supabase Storage
+- Canvi i previsualització d'avatar des del perfil
+- Actualització de nom sincronitzada amb Supabase
