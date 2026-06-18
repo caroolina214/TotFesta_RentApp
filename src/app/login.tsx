@@ -81,7 +81,7 @@ export default function LoginPage() {
                                         keyboardType="email-address"
                                         autoCapitalize="none"
                                         value={value}
-                                        onChangeText={onChange}
+                                        onChangeText={(text) => onChange(text.trim())}
                                         className='text-festa-baseObscur'
                                     />
                                 </Input>
