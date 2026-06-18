@@ -7,7 +7,8 @@ import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { useUserStore } from '@/src/stores/userStore';
-import { listPedidosActivos, listPedidosResumen, PedidoConDetalle } from '@/src/types/types';
+import { useQuery } from '@tanstack/react-query';
+import { pedidoService } from '@/src/services/pedidoService';
 import { router } from 'expo-router';
 import { ArrowRight, Package, Settings, User, Users } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -18,9 +19,6 @@ export default function HomeScreen() {
     const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
 
-    const [pedidosActivos, setPedidosActivos] = useState<PedidoConDetalle[]>([]);
-    const [totalPedidos, setTotalPedidos] = useState(0);
-
     const today = new Date().toLocaleDateString('ca-ES', {
         weekday: 'long',
         day: 'numeric',
@@ -29,10 +27,17 @@ export default function HomeScreen() {
 
     const { name, role } = useUserStore();
 
-    useEffect(() => {
-        listPedidosActivos().then(setPedidosActivos);
-        listPedidosResumen().then((data: PedidoConDetalle[]) => setTotalPedidos(data.length));
-    }, []);
+    const { data: pedidosActivos = [] } = useQuery({
+        queryKey: ['pedidos', 'activos'],
+        queryFn: pedidoService.getActivos,
+    });
+
+    const { data: totalPedidosData = [] } = useQuery({
+        queryKey: ['pedidos'],
+        queryFn: pedidoService.getAll,
+    });
+
+    const totalPedidos = totalPedidosData.length;
 
     const recollidesPendents = pedidosActivos.filter(
         (p) => p.estado === 'ENTREGADO'

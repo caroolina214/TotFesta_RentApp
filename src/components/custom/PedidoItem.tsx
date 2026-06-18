@@ -3,7 +3,7 @@ import { HStack } from '@/src/components/ui/hstack';
 import { VStack } from '@/src/components/ui/vstack';
 import { Text } from '@/src/components/ui/text';
 import { AppColors } from '@/src/constants/colors';
-import { PedidoConDetalle } from '@/src/types/types';
+import { PedidoConDetalle } from '@/src/types/Pedido';
 import { getEstadoBg, getEstadoLabel } from '@/src/utils/pedidoUtils';
 
 interface PedidoItemProps {

@@ -5,7 +5,7 @@ import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useThemeContext } from '@/src/providers/ThemeProvider';
-import { clientService } from '@/src/services';
+import { clientService, pedidoService } from '@/src/services';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, FileText, IdCard, Mail, MapPin, Package, Pencil, Phone, UserCheck, UserX } from 'lucide-react-native';
@@ -42,7 +42,11 @@ export default function ClientDetailScreen() {
         },
     });
 
-    const pedidos: any[] = [];
+    const { data: pedidos = [] } = useQuery({
+        queryKey: ['pedidos', 'client', id],
+        queryFn: () => pedidoService.getByClienteId(Number(id)),
+        enabled: !!id,
+    });
 
     const teActivos = pedidos.some(p =>
         p.estado === 'ENTREGADO' ||
