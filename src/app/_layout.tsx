@@ -1,6 +1,5 @@
 import '@/global.css';
-import { AuthProvider } from '@/src/providers/AuthProvider';
-import { ThemeProvider } from '@/src/providers/ThemeProvider';
+import { AuthProvider, QueryProvider, ThemeProvider } from '@/src/providers';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
@@ -26,9 +25,11 @@ export default function RootLayout() {
 
     return (
         <ThemeProvider>
-            <AuthProvider>
-                <Stack screenOptions={{ headerShown: false }} />
-            </AuthProvider>
+            <QueryProvider>
+                <AuthProvider>
+                    <Stack screenOptions={{ headerShown: false }} />
+                </AuthProvider>
+            </QueryProvider>
         </ThemeProvider>
     );
 }

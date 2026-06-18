@@ -5,8 +5,7 @@ import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/inp
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
-import { useAuth } from '@/src/providers/AuthProvider';
-import { useThemeContext } from '@/src/providers/ThemeProvider';
+import { useAuth, useThemeContext } from '@/src/providers';
 import { LoginFormValues, loginSchema } from '@/src/schemas/auth.schema';
 import { useUserStore } from '@/src/stores/userStore';
 import { usuarios } from '@/src/types/types';

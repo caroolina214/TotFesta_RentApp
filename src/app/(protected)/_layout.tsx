@@ -1,4 +1,4 @@
-import { useAuth } from '@/src/providers/AuthProvider';
+import { useAuth } from '@/src/providers';
 import { Redirect, Stack } from 'expo-router';
 
 export default function ProtectedLayout() {
