@@ -5,17 +5,17 @@ import { Text } from '@/src/components/ui/text';
 import { View } from '@/src/components/ui/view';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
+import { useUserStore } from '@/src/stores/userStore';
 import { listPedidosActivos, listPedidosResumen, PedidoConDetalle } from '@/src/types/types';
 import { router } from 'expo-router';
-import { ArrowRight, Package, User, Users, Settings } from 'lucide-react-native';
+import { ArrowRight, Package, Settings, User, Users } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, useColorScheme } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUserStore } from '@/src/stores/userStore';
 
 export default function HomeScreen() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
 
     const [pedidosActivos, setPedidosActivos] = useState<PedidoConDetalle[]>([]);
@@ -62,7 +62,7 @@ export default function HomeScreen() {
 
                 {/* Resum */}
                 <HStack space="md">
-                    <Card className={`flex-1 p-4 rounded-2xl ${isDark ? 'bg-festa-baseMig' : 'bg-white'}`}>
+                    <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
                         <VStack space="xs">
                             <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
                                 Pedidos actius
@@ -74,7 +74,7 @@ export default function HomeScreen() {
                         </VStack>
                     </Card>
 
-                    <Card className={`flex-1 p-4 rounded-2xl ${isDark ? 'bg-festa-baseMig' : 'bg-white'}`}>
+                    <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
                         <VStack space="xs">
                             <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
                                 Recollides pendents
@@ -91,7 +91,7 @@ export default function HomeScreen() {
                 <VStack space="sm">
                     {role === 'ADMIN' && (
                         <Pressable onPress={() => router.push('/clients')}>
-                            <Card className="p-4 rounded-2xl bg-festa-moratClar">
+                            <Card className="p-4 rounded-2xl shadow-sm elevation-sm bg-festa-moratClar">
                                 <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
                                     <HStack space="md" style={{ alignItems: 'center' }}>
                                         <Users size={24} color={AppColors.Morat} />
@@ -110,7 +110,7 @@ export default function HomeScreen() {
                         </Pressable>
                     )}
                     <Pressable onPress={() => router.push('/(protected)/profile')}>
-                        <Card className="p-4 rounded-2xl bg-festa-aquaClar">
+                        <Card className="p-4 rounded-2xl shadow-sm elevation-sm bg-festa-aquaClar">
                             <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
                                 <HStack space="md" style={{ alignItems: 'center' }}>
                                     <User size={24} color={AppColors.Aqua} />
@@ -128,7 +128,7 @@ export default function HomeScreen() {
                         </Card>
                     </Pressable>
                     <Pressable onPress={() => router.push('/(protected)/preferences')}>
-                        <Card className="p-4 rounded-2xl bg-festa-grocClar">
+                        <Card className="p-4 rounded-2xl shadow-sm elevation-sm bg-festa-grocClar">
                             <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
                                 <HStack space="md" style={{ alignItems: 'center' }}>
                                     <Settings size={24} color={AppColors.GrocObscur} />
@@ -154,14 +154,14 @@ export default function HomeScreen() {
                     </Text>
 
                     {pedidosActivos.length === 0 ? (
-                        <Card className="p-4 rounded-2xl">
+                        <Card className="p-4 rounded-2xl shadow-sm elevation-sm">
                             <Text className="text-sm font-schibsted text-festa-baseMig text-center">
                                 No hi ha pedidos actius per avui
                             </Text>
                         </Card>
                     ) : (
                         pedidosActivos.map((pedido) => (
-                            <Card className="px-3 py-1 rounded-2xl" key={pedido.id}>
+                            <Card className={`px-3 py-1 rounded-2xl shadow-sm elevation-sm ${isDark ? 'bg-festa-aquaObscur' : 'bg-white'}`} key={pedido.id}>
                                 <PedidoItem pedido={pedido} isDark={isDark} />
                             </Card>
                         ))

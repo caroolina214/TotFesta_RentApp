@@ -4,9 +4,10 @@ import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { Cliente } from '@/src/types/types';
 import { Mail, Package, Phone } from 'lucide-react-native';
-import { Pressable, View, useColorScheme } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 interface ClientCardProps {
     client: Cliente;
@@ -16,11 +17,10 @@ interface ClientCardProps {
 }
 
 export default function ClientCard({ client, pedidosCount, isSmall, onPress }: ClientCardProps) {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
 
     return (
-        <Card className={`p-4 rounded-2xl shadow-sm hover:bg-festa-aquaClar ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+        <Card className={`p-4 rounded-2xl shadow-sm elevation-sm hover:bg-festa-aquaClar ${isDark ? 'bg-festa-moratObscur shadow-festa-baseClar' : 'bg-white'}`}>
             <Pressable onPress={onPress}>
                 <HStack style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <VStack space="xs" style={{ flex: 1 }}>

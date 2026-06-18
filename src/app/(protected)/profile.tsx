@@ -6,17 +6,18 @@ import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useAuth } from '@/src/providers/AuthProvider';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { useUserStore } from '@/src/stores/userStore';
 import { router } from 'expo-router';
 import { ChevronLeft, LogOut, Mail, Save, Shield } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, useColorScheme } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
+
     const { name, email, role, updateName } = useUserStore();
     const { logout } = useAuth();
     const [editName, setEditName] = useState(name);
@@ -31,6 +32,7 @@ export default function ProfileScreen() {
             paddingVertical: insets.top + 16,
             paddingHorizontal: 24,
             backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
+            flexGrow: 1
         }}>
             <VStack space="md">
                 {/* Capçalera */}
@@ -57,33 +59,39 @@ export default function ProfileScreen() {
                     El meu perfil
                 </Text>
 
-                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-aquaObscur' : 'bg-white'}`}>
                     <VStack space="md">
-                        <Text className="text-xs font-schibsted text-festa-baseMig uppercase" style={{ letterSpacing: 1 }}>
+                        <Text className={`text-xs font-schibsted uppercase tracking-widest ${isDark ? 'text-festa-aquaClar' : 'text-festa-baseMig'}`}>
                             Dades personals
                         </Text>
 
                         <VStack space="xs">
-                            <Text className="text-sm font-schibsted text-festa-baseMig">Nom visible</Text>
-                            <Input className={`border-festa-baseMig data-[focus=true]:border-festa-morat data-[focus=true]:web:ring-0 ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+                            <Text className="text-sm font-schibsted text-festa-baseMig">Nom complet</Text>
+                            <Input
+                                className={`bg-festa-baseClar border-festa-baseMig data-[focus=true]:web:ring-0
+                                    ${isDark
+                                        ? 'data-[focus=true]:border-festa-verd data-[focus=true]:hover:border-festa-verd'
+                                        : 'data-[focus=true]:border-festa-aqua data-[focus=true]:hover:border-festa-aqua'
+                                    }`}>
                                 <InputField
                                     value={editName}
                                     onChangeText={setEditName}
                                     placeholder="El teu nom"
+                                    className='text-festa-baseObscur'
                                 />
                             </Input>
                         </VStack>
 
                         <HStack space="sm" style={{ alignItems: 'center' }}>
-                            <Mail size={16} color={AppColors.Morat} />
+                            <Mail size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
                             <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
                                 {email}
                             </Text>
                         </HStack>
 
                         <HStack space="sm" style={{ alignItems: 'center' }}>
-                            <Shield size={16} color={AppColors.Morat} />
-                            <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
+                            <Shield size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
+                            <Text className={`font-schibsted ${isDark ? 'text-festa-aqua' : 'text-festa-baseMig'}`}>
                                 {role === 'ADMIN' ? 'Administrador' : 'Operari'}
                             </Text>
                         </HStack>
@@ -96,8 +104,8 @@ export default function ProfileScreen() {
                     textColor={AppColors.FucsiaObscur}
                     iconColor={AppColors.FucsiaObscur}
                     icon={LogOut}
-                    centered
                     shadow
+                    centered
                 />
             </VStack>
         </ScrollView>

@@ -15,15 +15,18 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(bg|border|text|stroke|fill)-(primary|secondary|tertiary|error|success|warning|info|typography|outline|background|indicator)-(0|50|100|200|300|400|500|600|700|800|900|950|white|gray|black|error|warning|muted|success|info|light|dark|primary)/,
+        /(bg|border|text|stroke|fill|shadow|elevation)-(primary|secondary|tertiary|error|success|warning|info|typography|outline|background|indicator)-(0|50|100|200|300|400|500|600|700|800|900|950|white|gray|black|error|warning|muted|success|info|light|dark|primary)/,
     },
     {
       pattern:
-        /(bg|border|text|stroke|fill|shadow)-festa-(aqua|aquaClar|aquaObscur|morat|moratClar|moratObscur|fucsia|fucsiaClar|fucsiaObscur|groc|grocClar|grocObscur|verd|verdClar|verdObscur|baseClar|baseMig|baseObscur)/,
+        /(bg|border|text|stroke|fill|shadow|elevation)-festa-(aqua|aquaClar|aquaObscur|morat|moratClar|moratObscur|fucsia|fucsiaClar|fucsiaObscur|groc|grocClar|grocObscur|verd|verdClar|verdObscur|baseClar|baseMig|baseObscur)/,
       variants: ['data-[focus=true]', 'data-[focus=true]:hover', 'data-[hover=true]', 'hover', 'focus', 'active'],
     },
     {
       pattern: /font-(fuzzy|fuzzy-bold|schibsted|schibsted-italic|roboto-mono|roboto-mono-italic)/,
+    },
+    {
+      pattern: /(shadow|elevation)-(2xs|xs|sm|md|lg|xl|2xl|3xl|4xl)/,
     },
   ],
   theme: {
@@ -201,6 +204,7 @@ module.exports = {
           verdObscur: AppColors.VerdObscur,
           baseClar: AppColors.BaseClar,
           baseMig: AppColors.BaseMig,
+          baseMigObscur: AppColors.BaseMigObscur,
           baseObscur: AppColors.BaseObscur,
         },
       },

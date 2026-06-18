@@ -28,13 +28,13 @@ export default function PedidoItem({ pedido, isDark, hasBorderTop = false }: Ped
         >
             <HStack style={{ justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                 <VStack space="xs" style={{ flex: 1, paddingLeft: 4 }}>
-                    <Text className="text-sm font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
+                    <Text className={`text-sm font-schibsted ${isDark ? 'text-festa-baseClar' : 'text-festa-baseObscur'}`}>
                         {pedido.codigo}
                         {pedido.cliente?.nombre && ` — ${pedido.cliente.nombre}`}
                     </Text>
 
                     {pedido.lineas && (
-                        <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
+                        <Text className={`text-xs font-schibsted text-festa-baseMig`}>
                             {pedido.lineas.length} productes · {pedido.totalUnidades} unitats
                         </Text>
                     )}

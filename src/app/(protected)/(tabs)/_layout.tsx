@@ -1,12 +1,11 @@
-import { Tabs } from 'expo-router';
-import { useColorScheme } from 'react-native';
 import { AppColors } from '@/src/constants/colors';
-import { Home, Users } from 'lucide-react-native';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { useUserStore } from '@/src/stores/userStore';
+import { Tabs } from 'expo-router';
+import { Home, Users } from 'lucide-react-native';
 
 export default function TabsLayout() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
     const { role } = useUserStore();
 
     return (

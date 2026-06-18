@@ -5,16 +5,16 @@ import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/inp
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { Cliente, PedidoConDetalle, listClientes, listPedidosResumen } from '@/src/types/types';
 import { router, useFocusEffect } from 'expo-router';
 import { Plus, Search, X } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ClientsScreen() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
 
     const [clients, setClients] = useState<Cliente[]>([]);
@@ -72,6 +72,7 @@ export default function ClientsScreen() {
                         value={search}
                         onChangeText={setSearch}
                         autoCapitalize="none"
+                        className='text-festa-baseObscur'
                     />
                     {search.length > 0 && (
                         <InputSlot className="pr-3" onPress={() => setSearch('')}>
@@ -83,7 +84,7 @@ export default function ClientsScreen() {
 
             {/* Llistat */}
             <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 8 }}>
-                <VStack space="sm">
+                <VStack space="md">
                     {filtered.length === 0 ? (
                         <Card className="p-6 rounded-2xl">
                             <Text className="text-center text-festa-baseMig font-schibsted">

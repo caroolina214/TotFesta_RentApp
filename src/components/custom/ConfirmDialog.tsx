@@ -1,7 +1,8 @@
 import AppButton from '@/src/components/custom/AppButton';
 import { Text } from '@/src/components/ui/text';
 import { AppColors } from '@/src/constants/colors';
-import { Modal, Pressable, useColorScheme, View } from 'react-native';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
+import { Modal, Pressable, View } from 'react-native';
 
 interface ConfirmDialogProps {
     visible: boolean;
@@ -22,26 +23,25 @@ export default function ConfirmDialog({
     confirmText = 'Confirmar',
     cancelText = 'Cancel·lar',
 }: ConfirmDialogProps) {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
 
     return (
         <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
             <Pressable
-                style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+                className="flex-1 items-center justify-center p-6 bg-black/75"
                 onPress={onClose}
             >
                 <Pressable
-                    style={{ backgroundColor: isDark ? AppColors.MoratObscur : 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 400 }}
+                    className={`rounded-2xl p-6 w-full max-w-[400px] ${isDark ? 'bg-festa-aquaClar' : 'bg-festa-baseClar'}`}
                     onPress={() => { }}
                 >
-                    <Text className="text-xl font-fuzzy-bold text-festa-morat" style={{ marginBottom: 8 }}>
+                    <Text className="text-xl font-fuzzy-bold mb-2 text-festa-morat">
                         {title}
                     </Text>
-                    <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur, marginBottom: 24 }}>
+                    <Text className="font-schibsted mb-6 text-festa-baseObscur">
                         {message}
                     </Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
+                    <View className="flex-row justify-end gap-3">
                         <AppButton
                             label={cancelText}
                             onPress={onClose}

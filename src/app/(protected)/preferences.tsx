@@ -1,53 +1,52 @@
 import { AppButton } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
-import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
-import { useThemeStore } from '@/src/stores/themeStore';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { router } from 'expo-router';
-import { ChevronLeft, Moon, Sun, SunMoon } from 'lucide-react-native';
-import { ScrollView, useColorScheme } from 'react-native';
+import { ChevronLeft, Moon, Sun } from 'lucide-react-native';
+import { Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PreferencesScreen() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
+    const { theme, setTheme } = useThemeContext();
     const insets = useSafeAreaInsets();
-    const { theme, setTheme } = useThemeStore();
+    const isWeb = Platform.OS === 'web';
 
     const options = [
         { label: 'Clar', value: 'light' as const, icon: Sun },
         { label: 'Fosc', value: 'dark' as const, icon: Moon },
-        { label: 'Sistema', value: 'system' as const, icon: SunMoon },
+        // { label: 'Sistema', value: 'system' as const, icon: SunMoon },
     ];
 
     return (
         <ScrollView contentContainerStyle={{
+            flexGrow: 1,
             paddingVertical: insets.top + 16,
-            paddingHorizontal: 24,
+            paddingHorizontal: 20,
             backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
         }}>
+            <AppButton
+                label="Tornar"
+                onPress={() => router.replace('/(protected)/(tabs)')}
+                icon={ChevronLeft}
+                bgColor="transparent"
+                textColor={AppColors.Aqua}
+                iconColor={AppColors.Aqua}
+            />
             <VStack space="md">
-                {/* Capçalera */}
-                <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <AppButton
-                        label="Tornar"
-                        onPress={() => router.replace('/(protected)/(tabs)')}
-                        icon={ChevronLeft}
-                        bgColor="transparent"
-                        textColor={AppColors.Aqua}
-                        iconColor={AppColors.Aqua}
-                    />
-                </HStack>
-
-                <Text className="text-3xl font-fuzzy-bold text-festa-morat">
+                <Text className={'text-3xl my-2 font-fuzzy-bold text-festa-morat'}>
                     Preferències
                 </Text>
 
-                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+                <Card className={`p-4 rounded-2xl shadow-md elevation-sm ${isDark
+                    ? `bg-festa-aquaObscur ${isWeb ? 'shadow-black' : 'shadow-festa-baseClar'}`
+                    : 'bg-white'
+                    }`}>
                     <VStack space="md">
-                        <Text className="text-xs font-schibsted text-festa-baseMig uppercase" style={{ letterSpacing: 1 }}>
+                        <Text className={`text-xs font-schibsted uppercase tracking-widest ${isDark ? 'text-festa-aquaClar' : 'text-festa-baseObscur'}`}>
                             Tema visual
                         </Text>
                         {options.map(option => (
@@ -56,17 +55,17 @@ export default function PreferencesScreen() {
                                 label={option.label}
                                 onPress={() => setTheme(option.value)}
                                 icon={option.icon}
-                                bgColor={theme === option.value ? AppColors.AquaClar : isDark ? AppColors.MoratObscur : AppColors.BaseClar}
-                                textColor={theme === option.value ? AppColors.AquaObscur : isDark ? AppColors.BaseClar : AppColors.BaseObscur}
-                                iconColor={theme === option.value ? AppColors.AquaObscur : AppColors.BaseMig}
-                                outlined={theme !== option.value}
-                                outlineColor={isDark ? AppColors.MoratObscur : AppColors.BaseMig}
+                                bgColor={theme === option.value ? (isDark ? AppColors.BaseClar : AppColors.AquaClar) : isDark ? AppColors.BaseMig : AppColors.BaseClar}
+                                textColor={theme === option.value ? (isDark ? AppColors.BaseObscur : AppColors.AquaObscur) : isDark ? AppColors.BaseClar : AppColors.BaseMig}
+                                iconColor={theme === option.value ? (isDark ? AppColors.BaseObscur : AppColors.AquaObscur) : isDark ? AppColors.BaseClar : AppColors.BaseMig}
+                                outlined={theme === option.value}
+                                outlineColor={isDark ? AppColors.GrocObscur : AppColors.AquaObscur}
                                 shadow={theme === option.value}
                             />
                         ))}
                     </VStack>
                 </Card>
             </VStack>
-        </ScrollView>
+        </ScrollView >
     );
 }

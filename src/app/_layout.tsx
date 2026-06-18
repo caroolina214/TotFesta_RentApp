@@ -1,17 +1,13 @@
 import '@/global.css';
-import { GluestackUIProvider } from '@/src/components/ui/gluestack-ui-provider';
 import { AuthProvider } from '@/src/providers/AuthProvider';
+import { ThemeProvider } from '@/src/providers/ThemeProvider';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-import { useThemeStore } from '../stores/themeStore';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
-    const { theme } = useThemeStore();
 
     const [fontsLoaded] = useFonts({
         'FuzzyBubbles': require('@/assets/fonts/FuzzyBubbles-Regular.ttf'),
@@ -29,14 +25,10 @@ export default function RootLayout() {
     if (!fontsLoaded) return null;
 
     return (
-        <GluestackUIProvider mode={
-            theme === 'system'
-                ? (colorScheme === 'dark' ? 'dark' : 'light')
-                : theme
-        }>
+        <ThemeProvider>
             <AuthProvider>
                 <Stack screenOptions={{ headerShown: false }} />
             </AuthProvider>
-        </GluestackUIProvider>
+        </ThemeProvider>
     );
 }

@@ -4,23 +4,23 @@ import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
+import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { clientService } from '@/src/services';
 import { Cliente, DireccionCliente, PedidoConDetalle, clientes, direccionesCliente, listPedidosResumen } from '@/src/types/types';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, FileText, IdCard, Mail, MapPin, Package, Pencil, Phone, UserCheck, UserX } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ClientDetailScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
 
     const { width } = useWindowDimensions();
     const isSmall = width < 640;
 
+    const { id } = useLocalSearchParams<{ id: string }>();
     const [client, setClient] = useState<Cliente | null>(null);
     const [direccion, setDireccion] = useState<DireccionCliente | null>(null);
     const [pedidos, setPedidos] = useState<PedidoConDetalle[]>([]);
@@ -84,12 +84,11 @@ export default function ClientDetailScreen() {
             contentContainerStyle={{
                 paddingVertical: insets.top + 16,
                 paddingHorizontal: isSmall ? 20 : 30,
-                backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar
+                backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar,
+                flexGrow: 1
             }}
         >
             <VStack space="md">
-
-                {/* Capçalera */}
                 <HStack>
                     <Pressable onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                         <ChevronLeft size={20} color={AppColors.Aqua} />
@@ -105,7 +104,7 @@ export default function ClientDetailScreen() {
                             {toggleButton}
                         </HStack>
                         <HStack space="sm" style={{ alignItems: 'center', paddingTop: 15 }}>
-                            <Text className="text-3xl font-fuzzy-bold text-festa-morat mr-5 flex">{client.nombre}</Text>
+                            <Text className={`text-3xl font-fuzzy-bold  mr-5 flex ${isDark ? 'text-festa-moratClar' : 'text-festa-morat'}`}>{client.nombre}</Text>
                             <ClientStatusBadge activo={client.activo} />
                         </HStack>
                     </VStack>
@@ -121,14 +120,14 @@ export default function ClientDetailScreen() {
                 )}
 
                 {/* Dades bàsiques */}
-                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+                <Card className={`p-4 rounded-2xl shadow-sm elevation-sm ${isDark ? 'bg-festa-aquaObscur shadow-festa-baseClar' : 'bg-white'}`}>
                     <VStack space="sm">
-                        <Text className="text-xs font-schibsted text-festa-baseMig uppercase" style={{ letterSpacing: 1 }}>
+                        <Text className="text-xs font-schibsted text-festa-baseMig uppercase tracking-widest">
                             Dades de contacte
                         </Text>
                         {client.telefono && (
                             <HStack space="sm" style={{ alignItems: 'center' }}>
-                                <Phone size={16} color={AppColors.Morat} />
+                                <Phone size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
                                     {client.telefono}
                                 </Text>
@@ -136,7 +135,7 @@ export default function ClientDetailScreen() {
                         )}
                         {client.email && (
                             <HStack space="sm" style={{ alignItems: 'center' }}>
-                                <Mail size={16} color={AppColors.Morat} />
+                                <Mail size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
                                     {client.email}
                                 </Text>
@@ -144,7 +143,7 @@ export default function ClientDetailScreen() {
                         )}
                         {client.nifCif && (
                             <HStack space="sm" style={{ alignItems: 'center' }}>
-                                <IdCard size={16} color={AppColors.Morat} />
+                                <IdCard size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
                                     {client.nifCif}
                                 </Text>
@@ -152,7 +151,7 @@ export default function ClientDetailScreen() {
                         )}
                         {direccion && (
                             <HStack space="sm" style={{ alignItems: 'flex-start' }}>
-                                <MapPin size={16} color={AppColors.Morat} style={{ marginTop: 2 }} />
+                                <MapPin size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} style={{ marginTop: 2 }} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur, flex: 1 }}>
                                     {direccion.linea1}{direccion.ciudad ? `, ${direccion.ciudad}` : ''}{direccion.codigoPostal ? ` ${direccion.codigoPostal}` : ''}
                                 </Text>
@@ -170,7 +169,7 @@ export default function ClientDetailScreen() {
                 </Card>
 
                 {/* Pedidos */}
-                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
+                <Card className={`p-4 rounded-2xl mt-4 ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`}>
                     <VStack space="sm">
                         <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text className="text-xs font-schibsted text-festa-baseMig uppercase" style={{ letterSpacing: 1 }}>
