@@ -6,11 +6,11 @@ import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { clientService } from '@/src/services';
-import { Cliente, DireccionCliente, PedidoConDetalle, clientes, direccionesCliente, listPedidosResumen } from '@/src/types/types';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft, FileText, IdCard, Mail, MapPin, Package, Pencil, Phone, UserCheck, UserX } from 'lucide-react-native';
-import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ClientDetailScreen() {
@@ -21,32 +21,42 @@ export default function ClientDetailScreen() {
     const isSmall = width < 640;
 
     const { id } = useLocalSearchParams<{ id: string }>();
-    const [client, setClient] = useState<Cliente | null>(null);
-    const [direccion, setDireccion] = useState<DireccionCliente | null>(null);
-    const [pedidos, setPedidos] = useState<PedidoConDetalle[]>([]);
-
     const [showConfirm, setShowConfirm] = useState(false);
+    const queryClient = useQueryClient();
 
-    useFocusEffect(useCallback(() => {
-        const found = clientes.find(c => c.id === Number(id));
+    const { data: client, isLoading } = useQuery({
+        queryKey: ['clientes', id],
+        queryFn: () => clientService.getById(Number(id)),
+        enabled: !!id,
+    });
 
-        if (found) setClient(found);
+    const toggleActiveMutation = useMutation({
+        mutationFn: () => clientService.update(
+            Number(id),
+            { ...client!, activo: !client!.activo },
+            client!.direccion
+        ),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['clientes'] });
+            router.back();
+        },
+    });
 
-        const dir = direccionesCliente.find(d => d.clienteId === Number(id));
-
-        if (dir) setDireccion(dir);
-
-        listPedidosResumen().then(data => {
-            const clientPedidos = data.filter(p => p.clienteId === Number(id));
-            setPedidos(clientPedidos);
-        });
-    }, [id]));
+    const pedidos: any[] = [];
 
     const teActivos = pedidos.some(p =>
         p.estado === 'ENTREGADO' ||
         p.estado === 'DEVUELTO' ||
         p.estado === 'PENDIENTE_REVISION'
     );
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar }}>
+                <ActivityIndicator size="large" color={AppColors.Aqua} />
+            </View>
+        );
+    }
 
     if (!client) {
         return (
@@ -149,11 +159,11 @@ export default function ClientDetailScreen() {
                                 </Text>
                             </HStack>
                         )}
-                        {direccion && (
+                        {client.direccion && (
                             <HStack space="sm" style={{ alignItems: 'flex-start' }}>
                                 <MapPin size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} style={{ marginTop: 2 }} />
                                 <Text className="font-schibsted" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur, flex: 1 }}>
-                                    {direccion.linea1}{direccion.ciudad ? `, ${direccion.ciudad}` : ''}{direccion.codigoPostal ? ` ${direccion.codigoPostal}` : ''}
+                                    {client.direccion.linea1}{client.direccion.ciudad ? `, ${client.direccion.ciudad}` : ''}{client.direccion.codigoPostal ? ` ${client.direccion.codigoPostal}` : ''}
                                 </Text>
                             </HStack>
                         )}
@@ -209,14 +219,7 @@ export default function ClientDetailScreen() {
                     : `Vols activar ${client.nombre}?`
                 }
                 confirmText={client.activo ? 'Desactivar' : 'Activar'}
-                onConfirm={() => {
-                    clientService.update(
-                        Number(id),
-                        { ...client, activo: !client.activo },
-                        direccion ?? { linea1: '', ciudad: '', codigoPostal: '', esPrincipal: true }
-                    );
-                    router.back();
-                }}
+                onConfirm={() => toggleActiveMutation.mutate()}
                 onClose={() => setShowConfirm(false)}
             />
         </ScrollView>

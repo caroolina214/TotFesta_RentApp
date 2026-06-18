@@ -6,39 +6,32 @@ import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useThemeContext } from '@/src/providers/ThemeProvider';
-import { Cliente, PedidoConDetalle, listClientes, listPedidosResumen } from '@/src/types/types';
-import { router, useFocusEffect } from 'expo-router';
+import { clientService } from '@/src/services/clientService';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { Plus, Search, X } from 'lucide-react-native';
-import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ClientsScreen() {
     const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
 
-    const [clients, setClients] = useState<Cliente[]>([]);
     const [search, setSearch] = useState('');
+    const { width } = useWindowDimensions();
+    const isSmall = width < 640;
+
+    const { data: clients = [], isLoading, isError } = useQuery({
+        queryKey: ['clientes'],
+        queryFn: clientService.getAll,
+    });
 
     const filtered = clients.filter(c =>
         c.nombre.toLowerCase().includes(search.toLowerCase()) ||
         c.email?.toLowerCase().includes(search.toLowerCase()) ||
         c.telefono?.includes(search)
     );
-
-    const [pedidos, setPedidos] = useState<PedidoConDetalle[]>([]);
-    const { width } = useWindowDimensions();
-    const isSmall = width < 640;
-
-    useFocusEffect(
-        useCallback(() => {
-            listClientes().then(setClients);
-            listPedidosResumen().then(setPedidos);
-        }, [])
-    );
-
-    const getPedidosCount = (clientId: number) =>
-        pedidos.filter(p => p.clienteId === clientId).length;
 
     return (
         <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar, paddingTop: insets.top, paddingBottom: insets.bottom }}>
@@ -83,6 +76,14 @@ export default function ClientsScreen() {
             </View>
 
             {/* Llistat */}
+            {isLoading && (
+                <ActivityIndicator size="large" color={AppColors.Aqua} style={{ marginTop: 24 }} />
+            )}
+            {isError && (
+                <Text className="text-center text-festa-fucsia font-schibsted p-4">
+                    Error carregant els clients
+                </Text>
+            )}
             <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 8 }}>
                 <VStack space="md">
                     {filtered.length === 0 ? (
@@ -96,7 +97,7 @@ export default function ClientsScreen() {
                             <ClientCard
                                 key={client.id}
                                 client={client}
-                                pedidosCount={getPedidosCount(client.id)}
+                                pedidosCount={client.pedidosCount ?? 0}
                                 isSmall={isSmall}
                                 onPress={() => router.push({ pathname: '/clients/[id]', params: { id: client.id } })}
                             />
