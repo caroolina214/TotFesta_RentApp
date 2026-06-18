@@ -1,8 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { usuarios } from '@/src/types/types';
+import { supabase } from '@/src/config/supabaseClient';
 import { useUserStore } from '@/src/stores/userStore';
+import { router } from 'expo-router';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -13,49 +12,60 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const SESSION_KEY = 'auth_session';
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        AsyncStorage.getItem(SESSION_KEY).then(value => {
-            if (value) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
                 setIsAuthenticated(true);
-                const { userId } = JSON.parse(value);
-                const user = usuarios.find(u => u.id === userId);
-                if (user) {
-                    useUserStore.getState().setUser({
-                        id: user.id,
-                        name: user.name,
-                        email: user.email,
-                        role: user.roleId === 2 ? 'ADMIN' : 'NORMAL',
-                    });
-                }
+                loadUserProfile(session.user.id);
                 router.replace('/(protected)/(tabs)');
             }
             setIsLoading(false);
         });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                setIsAuthenticated(true);
+                loadUserProfile(session.user.id);
+            } else {
+                setIsAuthenticated(false);
+                useUserStore.getState().clearUser();
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    const login = useCallback(async (email: string, password: string): Promise<boolean> => {
-        const user = usuarios.find(u => u.email === email);
+    const loadUserProfile = async (authUserId: string) => {
+        const { data } = await supabase
+            .from('usuarios')
+            .select('id_usuario, nombre, email, id_rol')
+            .eq('auth_user_id', authUserId)
+            .maybeSingle();
 
-        if (!user) return false;
+        if (data) {
+            useUserStore.getState().setUser({
+                id: data.id_usuario,
+                name: data.nombre,
+                email: data.email,
+                role: data.id_rol === 2 ? 'ADMIN' : 'NORMAL',
+            });
+        }
+    };
 
-        await AsyncStorage.setItem(SESSION_KEY, JSON.stringify({ userId: user.id }));
-        setIsAuthenticated(true);
-
+    const login = async (email: string, password: string): Promise<boolean> => {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return false;
         return true;
-    }, []);
+    };
 
-    const logout = useCallback(async () => {
-        await AsyncStorage.removeItem(SESSION_KEY);
-        useUserStore.getState().clearUser();
-        setIsAuthenticated(false);
+    const logout = async () => {
+        await supabase.auth.signOut();
         router.replace('/login');
-    }, []);
+    };
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
@@ -66,8 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
     const context = useContext(AuthContext);
-
     if (!context) throw new Error('useAuth must be used within AuthProvider');
-
     return context;
 }

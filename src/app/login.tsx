@@ -7,8 +7,6 @@ import { VStack } from '@/src/components/ui/vstack';
 import { AppColors } from '@/src/constants/colors';
 import { useAuth, useThemeContext } from '@/src/providers';
 import { LoginFormValues, loginSchema } from '@/src/schemas/auth.schema';
-import { useUserStore } from '@/src/stores/userStore';
-import { usuarios } from '@/src/types/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
@@ -20,7 +18,7 @@ export default function LoginPage() {
     const { isDark } = useThemeContext();
 
     const [showPassword, setShowPassword] = useState(false);
-    const { control, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+    const { control, handleSubmit, setError, formState: { errors } } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: { email: '', password: '' },
     });
@@ -30,14 +28,15 @@ export default function LoginPage() {
     const isTallScreen = height > 800;
 
     const { login } = useAuth();
-    const { setUser } = useUserStore();
+    const [loginError, setLoginError] = useState<string | null>(null);
 
     const handleLogin = handleSubmit(async (data: LoginFormValues) => {
         const success = await login(data.email, data.password);
         if (success) {
-            const user = usuarios.find(u => u.email === data.email)!;
-            setUser({ id: user.id, name: user.name, email: user.email, role: user.roleId === 2 ? 'ADMIN' : 'NORMAL' });
             router.replace('/(protected)/(tabs)');
+        } else {
+            setError('email', { message: 'Correu o contrasenya incorrectes' });
+            setError('password', { message: 'Correu o contrasenya incorrectes' });
         }
     });
 
@@ -64,7 +63,7 @@ export default function LoginPage() {
                 </Text>
                 <Card className={`w-full max-w-xs lg:max-w-md p-6 rounded-2xl shadow-lg elevation-lg ${isDark ? 'bg-festa-aquaObscur' : 'bg-festa-grocClar'} `}>
                     <VStack space="2xl">
-                        <FormControl isInvalid={!!errors.email}>
+                        <FormControl isInvalid={!!errors.email || !!loginError}>
                             <FormControlLabel>
                                 <FormControlLabelText>Correu electrònic</FormControlLabelText>
                             </FormControlLabel>
@@ -87,7 +86,7 @@ export default function LoginPage() {
                             )} />
                             {errors.email && <FormControlError><FormControlErrorText className="font-schibsted text-xs">{errors.email.message}</FormControlErrorText></FormControlError>}
                         </FormControl>
-                        <FormControl isInvalid={!!errors.password}>
+                        <FormControl isInvalid={!!errors.password || !!loginError}>
                             <FormControlLabel>
                                 <FormControlLabelText>Contrasenya</FormControlLabelText>
                             </FormControlLabel>

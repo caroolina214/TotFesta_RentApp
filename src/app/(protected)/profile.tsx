@@ -4,6 +4,7 @@ import { HStack } from '@/src/components/ui/hstack';
 import { Input, InputField } from '@/src/components/ui/input';
 import { Text } from '@/src/components/ui/text';
 import { VStack } from '@/src/components/ui/vstack';
+import { supabase } from '@/src/config/supabaseClient';
 import { AppColors } from '@/src/constants/colors';
 import { useAuth, useThemeContext } from '@/src/providers';
 import { useUserStore } from '@/src/stores/userStore';
@@ -21,9 +22,15 @@ export default function ProfileScreen() {
     const { logout } = useAuth();
     const [editName, setEditName] = useState(name);
 
-    const handleSave = () => {
-        updateName(editName);
-        router.back();
+    const handleSave = async () => {
+        const { error } = await supabase
+            .from('usuarios')
+            .update({ nombre: editName })
+            .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id);
+        if (!error) {
+            updateName(editName);
+            router.back();
+        }
     };
 
     return (
