@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const lineaPedidoSchema = z.object({
     productoId: z.number({ required_error: 'El producte és obligatori' }).min(1, 'Selecciona un producte'),
     cantidad: z.number().min(1, 'La quantitat ha de ser almenys 1'),
-    diasAlquiler: z.number().min(1, 'Els dies han de ser almenys 1'),
+    diasAlquiler: z.number().optional(),
 });
 
 export const pedidoSchema = z.object({

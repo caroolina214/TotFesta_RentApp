@@ -223,7 +223,7 @@ export const pedidoService = {
             .eq('id_pedido', id);
 
         if (pedidoError) {
-            throw new Error('No s\'ha pogut actualitzar el pedido.');
+            throw new Error(`No s'ha pogut actualitzar el pedido: ${pedidoError.message}`);
         }
 
         const { error: deleteError } = await supabase
@@ -232,7 +232,7 @@ export const pedidoService = {
             .eq('id_pedido', id);
 
         if (deleteError) {
-            throw new Error('No s\'han pogut esborrar les línies antigues.');
+            throw new Error(`No s'han pogut esborrar les línies antigues: ${deleteError.message}`);
         }
 
         const nuevasLineas = buildLineas(id, pedido.lineas, preciosMap, pedido.fechaInicio, pedido.fechaFin);
@@ -242,10 +242,9 @@ export const pedidoService = {
             .insert(nuevasLineas);
 
         if (lineasError) {
-            throw new Error('No s\'han pogut guardar les noves línies del pedido.');
+            throw new Error(`No s'han pogut guardar les noves línies del pedido: ${lineasError.message}`);
         }
     },
-
 
     updateEstado: async (id: number, estado: EstadoPedido): Promise<void> => {
         const { error } = await supabase
