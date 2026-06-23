@@ -13,6 +13,7 @@ Aplicació de lloguer d'articles per a festes i celebracions.
 - AsyncStorage
 - Supabase
 - TanStack React Query
+- Firebase
 
 ## Estructura
 
@@ -39,6 +40,8 @@ src/
 - `task-app-state` — Tasca 3: estat de l'aplicació
 - `task-backend-react-query` — Tasca 4: consum de backend
 - `task-storage-login` — Tasca 5: storage i login
+- `task-push-notifications` — Tasca 6: notificacions push
+- `task-free-improvement` — Tasca 7: millora lliure
 
 <br>
 
@@ -93,3 +96,14 @@ src/
 - Avatar de perfil amb Supabase Storage
 - Canvi i previsualització d'avatar des del perfil
 - Actualització de nom sincronitzada amb Supabase
+
+### Tasca 6: Notificacions push
+
+- Implementació de notificacions push amb firebase al afegir un nou client
+
+### Tasca 7: Millora lliure
+
+- Catàleg de productes accessible per a usuaris no registrats i registrats
+- Actualització del registre per a la creació de clients, amb un procés més clar i eficient
+- Els clients poden crear pedidos per a ells mateixos des de l’aplicació
+- Els administradors i operaris poden crear pedidos per a qualsevol client, mantenint permisos diferenciats segons el rol
