@@ -133,6 +133,12 @@ export default function LoginPage() {
                         <Text className={`${isDark ? 'text-festa-verd' : 'text-festa-verdObscur'}`}>Registra't</Text>
                     </Text>
                 </Pressable>
+                <Pressable className="mt-1 mb-7" onPress={() => router.push('/catalog')}>
+                    <Text className="text-festa-baseMig text-sm">
+                        Continuar com a{' '}
+                        <Text className={`${isDark ? 'text-festa-aquaClar' : 'text-festa-aquaObscur'}`}>convidat</Text>
+                    </Text>
+                </Pressable>
             </View>
 
             <View />
