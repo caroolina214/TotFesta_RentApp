@@ -4,8 +4,8 @@ interface UserState {
     id: number | null;
     name: string;
     email: string;
-    role: 'ADMIN' | 'NORMAL' | null;
-    setUser: (user: { id: number; name: string; email: string; role: 'ADMIN' | 'NORMAL' }) => void;
+    role: 'ADMIN' | 'WORKER' | 'CLIENT' | null;
+    setUser: (user: { id: number; name: string; email: string; role: 'ADMIN' | 'WORKER' | 'CLIENT' }) => void;
     clearUser: () => void;
     updateName: (name: string) => void;
 }

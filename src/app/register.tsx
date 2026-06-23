@@ -44,13 +44,13 @@ export default function RegisterPage() {
                 auth_user_id: authData.user.id,
                 nombre: data.nombre,
                 email: data.email,
-                id_rol: 1,
+                id_rol: 3,
             });
             useUserStore.getState().setUser({
                 id: 0,
                 name: data.nombre,
                 email: data.email,
-                role: 'NORMAL',
+                role: 'CLIENT',
             });
             router.replace('/(protected)/(tabs)');
         }

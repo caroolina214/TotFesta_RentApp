@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 id: data.id_usuario,
                 name: data.nombre,
                 email: data.email,
-                role: data.id_rol === 2 ? 'ADMIN' : 'NORMAL',
+                role: data.id_rol === 2 ? 'ADMIN' : data.id_rol === 3 ? 'CLIENT' : 'WORKER',
             });
         }
     };
