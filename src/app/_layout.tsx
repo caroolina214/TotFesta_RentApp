@@ -1,8 +1,9 @@
 import '@/global.css';
-import { AuthProvider, QueryProvider, ThemeProvider } from '@/src/providers';
+import { AuthProvider, QueryProvider, ThemeProvider, NotificationsProvider } from '@/src/providers';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
+import { useNotifications } from '@/src/hooks';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,7 +28,9 @@ export default function RootLayout() {
         <ThemeProvider>
             <QueryProvider>
                 <AuthProvider>
-                    <Stack screenOptions={{ headerShown: false }} />
+                    <NotificationsProvider>
+                        <Stack screenOptions={{ headerShown: false }} />
+                    </NotificationsProvider>
                 </AuthProvider>
             </QueryProvider>
         </ThemeProvider>
