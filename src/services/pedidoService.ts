@@ -1,5 +1,6 @@
 import { supabase } from '@/src/config/supabaseClient';
 import { PedidoConDetalle, EstadoPedido } from '@/src/types/Pedido';
+import { PedidoFormValues } from '@/src/schemas/pedido.schema';
 
 type PedidoRow = {
     id_pedido: number;
@@ -101,5 +102,52 @@ export const pedidoService = {
             .order('fecha_inicio', { ascending: false });
         if (error || !data) throw new Error('No s\'han pogut carregar els pedidos del client.');
         return data.map(mapPedido);
+    },
+
+    create: async (
+        pedido: PedidoFormValues,
+        creadoPor: number
+    ): Promise<void> => {
+        const codigo = `P-${Date.now()}`;
+        const { error } = await supabase
+            .from('pedidos')
+            .insert({
+                codigo,
+                id_cliente: pedido.clienteId,
+                fecha_inicio: pedido.fechaInicio,
+                fecha_fin: pedido.fechaFin,
+                estado: pedido.estado,
+                creado_por: creadoPor,
+                notas: pedido.notas ?? null,
+            });
+        if (error) throw new Error('No s\'ha pogut crear el pedido.');
+    },
+
+    update: async (
+        id: number,
+        pedido: PedidoFormValues
+    ): Promise<void> => {
+        const { error } = await supabase
+            .from('pedidos')
+            .update({
+                id_cliente: pedido.clienteId,
+                fecha_inicio: pedido.fechaInicio,
+                fecha_fin: pedido.fechaFin,
+                estado: pedido.estado,
+                notas: pedido.notas ?? null,
+            })
+            .eq('id_pedido', id);
+        if (error) throw new Error('No s\'ha pogut actualitzar el pedido.');
+    },
+
+    updateEstado: async (
+        id: number,
+        estado: EstadoPedido
+    ): Promise<void> => {
+        const { error } = await supabase
+            .from('pedidos')
+            .update({ estado })
+            .eq('id_pedido', id);
+        if (error) throw new Error('No s\'ha pogut actualitzar l\'estat del pedido.');
     },
 };

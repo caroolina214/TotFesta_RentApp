@@ -2,7 +2,7 @@ import { AppColors } from '@/src/constants/colors';
 import { useThemeContext } from '@/src/providers/ThemeProvider';
 import { useUserStore } from '@/src/stores/userStore';
 import { Tabs } from 'expo-router';
-import { Home, Users } from 'lucide-react-native';
+import { ClipboardList, Home, Users } from 'lucide-react-native';
 
 export default function TabsLayout() {
     const { isDark } = useThemeContext();
@@ -37,6 +37,14 @@ export default function TabsLayout() {
                     title: 'Clients',
                     tabBarIcon: ({ color }) => <Users size={22} color={color} />,
                     href: role === 'ADMIN' ? undefined : null,
+                }}
+            />
+            <Tabs.Screen
+                name="orders"
+                options={{
+                    title: 'Pedidos',
+                    tabBarIcon: ({ color }) => <ClipboardList size={22} color={color} />,
+                    href: role === 'CLIENT' ? null : undefined,
                 }}
             />
         </Tabs>
