@@ -1,4 +1,4 @@
-import { AppButton, ConfirmDialog, RequiredLabel } from '@/src/components/custom';
+import { AppButton, ClientSelector, ConfirmDialog, ProducteSelector, RequiredLabel } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
 import { FormControl, FormControlError, FormControlErrorText, FormControlLabel, FormControlLabelText } from '@/src/components/ui/form-control';
 import { Input, InputField } from '@/src/components/ui/input';
@@ -21,6 +21,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFieldArray } from 'react-hook-form';
+import { producteService } from '@/src/services';
+import { Plus } from 'lucide-react-native';
+
 
 const estats: EstadoPedido[] = ['PREPARADO', 'ENTREGADO', 'DEVUELTO', 'PENDIENTE_REVISION', 'FINALIZADO'];
 
@@ -30,6 +34,7 @@ const defaultValues: PedidoFormValues = {
     fechaFin: '',
     estado: 'PREPARADO',
     notas: '',
+    lineas: []
 };
 
 export default function OrderFormScreen() {
@@ -38,43 +43,72 @@ export default function OrderFormScreen() {
     const { id } = useLocalSearchParams<{ id?: string }>();
     const isEdit = !!id;
     const queryClient = useQueryClient();
-    const { id: userId } = useUserStore();
+    const { id: userId, role, clienteId } = useUserStore();
 
     const { control, handleSubmit, reset, formState: { errors, isDirty } } = useForm<PedidoFormValues>({
         resolver: zodResolver(pedidoSchema),
         defaultValues,
     });
 
-    const [confirmDialog, setConfirmDialog] = useState<{ visible: boolean; title: string; message: string }>({
-        visible: false, title: '', message: '',
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'lineas',
     });
-    const onConfirmRef = useRef<() => void>(() => { });
+
+    const [confirmDialog, setConfirmDialog] = useState<{
+        visible: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({
+        visible: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
+
+    // ← eliminat onConfirmRef, ja no cal
 
     const { data: clients = [] } = useQuery({
         queryKey: ['clientes'],
         queryFn: clientService.getAll,
     });
 
-    const { data: pedidos = [] } = useQuery({
-        queryKey: ['pedidos'],
-        queryFn: pedidoService.getAll,
+    const { data: productos = [] } = useQuery({
+        queryKey: ['productos'],
+        queryFn: producteService.getAll,
+    });
+
+    const { data: pedido } = useQuery({
+        queryKey: ['pedido', id],
+        queryFn: () => pedidoService.getById(Number(id)),
         enabled: isEdit,
     });
 
     useEffect(() => {
-        if (isEdit && pedidos.length > 0) {
-            const pedido = pedidos.find(p => p.id === Number(id));
-            if (pedido) {
-                reset({
-                    clienteId: pedido.clienteId,
-                    fechaInicio: pedido.fechaInicio,
-                    fechaFin: pedido.fechaFin,
-                    estado: pedido.estado,
-                    notas: pedido.notas ?? '',
-                });
-            }
+        if (pedido) {
+            reset({
+                clienteId: pedido.clienteId,
+                fechaInicio: pedido.fechaInicio,
+                fechaFin: pedido.fechaFin,
+                estado: pedido.estado,
+                notas: pedido.notas ?? '',
+                lineas: pedido.lineas.map(l => ({
+                    productoId: l.productoId,
+                    cantidad: l.cantidadTotal,
+                })),
+            });
         }
-    }, [pedidos, id]);
+    }, [pedido]);
+
+    useEffect(() => {
+        if (!isEdit && role === 'CLIENT') {
+            reset(prev => ({
+                ...prev,
+                clienteId: clienteId!,
+            }));
+        }
+    }, [role, clienteId, isEdit]);
 
     const createMutation = useMutation({
         mutationFn: (data: PedidoFormValues) => pedidoService.create(data, userId!),
@@ -87,26 +121,37 @@ export default function OrderFormScreen() {
     });
 
     const confirmAction = (title: string, message: string, onConfirm: () => void) => {
-        onConfirmRef.current = onConfirm;
-        setConfirmDialog({ visible: true, title, message });
+        setConfirmDialog({ visible: true, title, message, onConfirm });
     };
 
-    const closeDialog = () => setConfirmDialog(prev => ({ ...prev, visible: false }));
+    const closeDialog = () =>
+        setConfirmDialog(prev => ({ ...prev, visible: false, onConfirm: () => { } }));
 
     const handleSave = handleSubmit((data) => {
         confirmAction(
             isEdit ? 'Guardar canvis' : 'Crear pedido',
             isEdit ? 'Vols guardar els canvis?' : 'Vols crear aquest pedido?',
             async () => {
-                if (isEdit) {
-                    await updateMutation.mutateAsync(data);
-                } else {
-                    await createMutation.mutateAsync(data);
+                try {
+                    if (isEdit) {
+                        await updateMutation.mutateAsync(data);
+                    } else {
+                        await createMutation.mutateAsync(data);
+                    }
+                    router.back();
+                } catch (e) {
+                    closeDialog();
+                    // pots afegir aquí un toast o alert d'error
                 }
-                router.back();
             }
         );
     });
+
+    const [filteredClients, setFilteredClients] = useState(clients);
+    useEffect(() => {
+        setFilteredClients(clients);
+    }, [clients]);
+
 
     const inputClass = `border-festa-baseMig data-[focus=true]:border-festa-morat data-[focus=true]:web:ring-0 ${isDark ? 'bg-festa-moratObscur' : 'bg-white'}`;
 
@@ -155,26 +200,26 @@ export default function OrderFormScreen() {
                                 Dades del pedido
                             </Text>
 
-                            {/* Client */}
-                            <FormControl isInvalid={!!errors.clienteId}>
-                                <FormControlLabel><RequiredLabel label="Client" /></FormControlLabel>
-                                <Controller control={control} name="clienteId" render={({ field: { onChange, value } }) => (
-                                    <VStack space="xs">
-                                        {clients.map(client => (
-                                            <AppButton
-                                                key={client.id}
-                                                label={client.nombre}
-                                                onPress={() => onChange(client.id)}
-                                                bgColor={value === client.id ? AppColors.MoratClar : isDark ? AppColors.MoratObscur : AppColors.BaseClar}
-                                                textColor={value === client.id ? AppColors.MoratObscur : AppColors.BaseMig}
-                                                outlined={value !== client.id}
-                                                outlineColor={AppColors.BaseMig}
-                                            />
-                                        ))}
-                                    </VStack>
-                                )} />
-                                {errors.clienteId && <FormControlError><FormControlErrorText className="font-schibsted text-xs">{errors.clienteId.message}</FormControlErrorText></FormControlError>}
-                            </FormControl>
+                            {/* Client — només ADMIN/WORKER */}
+                            {role !== 'CLIENT' ? (
+                                <Controller
+                                    control={control}
+                                    name="clienteId"
+                                    render={({ field: { onChange, value } }) => (
+                                        <ClientSelector
+                                            clients={clients}
+                                            value={value}
+                                            onChange={onChange}
+                                            inputClass={inputClass}
+                                        />
+                                    )}
+                                />
+                            ) : (
+                                <Text className="font-schibsted text-festa-baseMig">
+                                    Client: {clients.find(c => c.id === clienteId)?.nombre}
+                                </Text>
+                            )}
+
 
                             {/* Data inici */}
                             <FormControl isInvalid={!!errors.fechaInicio}>
@@ -208,25 +253,33 @@ export default function OrderFormScreen() {
                                 {errors.fechaFin && <FormControlError><FormControlErrorText className="font-schibsted text-xs">{errors.fechaFin.message}</FormControlErrorText></FormControlError>}
                             </FormControl>
 
-                            {/* Estat */}
-                            <FormControl isInvalid={!!errors.estado}>
-                                <FormControlLabel><RequiredLabel label="Estat" /></FormControlLabel>
-                                <Controller control={control} name="estado" render={({ field: { onChange, value } }) => (
-                                    <VStack space="xs">
-                                        {estats.map(estat => (
-                                            <AppButton
-                                                key={estat}
-                                                label={getEstadoLabel(estat)}
-                                                onPress={() => onChange(estat)}
-                                                bgColor={value === estat ? AppColors.AquaClar : isDark ? AppColors.MoratObscur : AppColors.BaseClar}
-                                                textColor={value === estat ? AppColors.AquaObscur : AppColors.BaseMig}
-                                                outlined={value !== estat}
-                                                outlineColor={AppColors.BaseMig}
-                                            />
-                                        ))}
-                                    </VStack>
-                                )} />
-                            </FormControl>
+                            {/* Estat — només ADMIN i WORKER */}
+                            {role !== 'CLIENT' && (
+                                <FormControl isInvalid={!!errors.estado}>
+                                    <FormControlLabel><RequiredLabel label="Estat" /></FormControlLabel>
+                                    <Controller
+                                        control={control}
+                                        name="estado"
+                                        render={({ field: { onChange, value } }) => (
+                                            <VStack space="xs">
+                                                {estats.map(estat => (
+                                                    <AppButton
+                                                        key={estat}
+                                                        label={getEstadoLabel(estat)}
+                                                        onPress={() => onChange(estat)}
+                                                        bgColor={value === estat ? AppColors.AquaClar : isDark ? AppColors.MoratObscur : AppColors.BaseClar}
+                                                        textColor={value === estat ? AppColors.AquaObscur : AppColors.BaseMig}
+                                                        outlined={value !== estat}
+                                                        shadow={value === estat}
+                                                        outlineColor={AppColors.BaseMig}
+                                                    />
+                                                ))}
+                                            </VStack>
+                                        )}
+                                    />
+                                </FormControl>
+                            )}
+
 
                             {/* Notes */}
                             <FormControl>
@@ -244,6 +297,101 @@ export default function OrderFormScreen() {
                                     </Textarea>
                                 )} />
                             </FormControl>
+
+                            {/* Línies de producte */}
+                            <FormControl isInvalid={!!errors.lineas}>
+                                <FormControlLabel>
+                                    <RequiredLabel label="Línies de producte" />
+                                </FormControlLabel>
+
+                                <VStack space="md">
+                                    {fields.map((field, index) => (
+                                        <Card key={field.id} className={`p-3 rounded-xl ${isDark ? 'bg-festa-moratObscur' : 'bg-festa-baseClar'}`}>
+                                            <VStack space="sm">
+
+                                                {/* Producte */}
+                                                <Controller
+                                                    control={control}
+                                                    name={`lineas.${index}.productoId`}
+                                                    render={({ field: { onChange, value } }) => (
+                                                        <ProducteSelector
+                                                            productos={productos}
+                                                            value={value}
+                                                            onChange={onChange}
+                                                            inputClass={inputClass}
+                                                            usedIds={fields.map((_, i) => 0)}
+                                                        />
+                                                    )}
+                                                />
+
+                                                <View className="flex flex-col md:flex-row w-full gap-2 items-end md:items-start">
+
+                                                    {/* Quantitat */}
+                                                    <FormControl className='flex-grow' isInvalid={!!errors.lineas?.[index]?.cantidad}>
+                                                        <FormControlLabel>
+                                                            <FormControlLabelText className="font-schibsted text-sm" style={{ color: isDark ? AppColors.BaseClar : AppColors.BaseObscur }}>
+                                                                Quantitat
+                                                            </FormControlLabelText>
+                                                        </FormControlLabel>
+
+                                                        <Controller
+                                                            control={control}
+                                                            name={`lineas.${index}.cantidad`}
+                                                            render={({ field: { onChange, value } }) => (
+                                                                <Input className={inputClass}>
+                                                                    <InputField
+                                                                        placeholder="Quantitat"
+                                                                        keyboardType="numeric"
+                                                                        value={String(value ?? '')}
+                                                                        onChangeText={t => onChange(Number(t))}
+                                                                    />
+                                                                </Input>
+                                                            )}
+                                                        />
+
+                                                        {errors.lineas?.[index]?.cantidad && (
+                                                            <FormControlError>
+                                                                <FormControlErrorText className="font-schibsted text-xs">
+                                                                    {errors.lineas[index].cantidad?.message}
+                                                                </FormControlErrorText>
+                                                            </FormControlError>
+                                                        )}
+                                                    </FormControl>
+
+                                                    <View className='h-8 self-end mb-2 '>
+                                                        <AppButton
+                                                            label="Eliminar línia"
+                                                            onPress={() => remove(index)}
+                                                            bgColor={AppColors.FucsiaClar}
+                                                            textColor={AppColors.Fucsia}
+                                                            outlineColor={AppColors.Fucsia}
+                                                            outlined
+                                                        />
+                                                    </View>
+                                                </View>
+                                            </VStack>
+                                        </Card>
+                                    ))}
+
+                                    <AppButton
+                                        label="Afegir línia"
+                                        onPress={() => append({ productoId: 0, cantidad: 1, diasAlquiler: 1 })}
+                                        bgColor={AppColors.VerdClar}
+                                        textColor={AppColors.VerdObscur}
+                                        shadow
+                                        icon={Plus}
+                                    />
+                                </VStack>
+
+                                {errors.lineas && (
+                                    <FormControlError>
+                                        <FormControlErrorText className="font-schibsted text-xs">
+                                            {errors.lineas.message}
+                                        </FormControlErrorText>
+                                    </FormControlError>
+                                )}
+                            </FormControl>
+
                         </VStack>
                     </Card>
                 </VStack>
@@ -253,7 +401,7 @@ export default function OrderFormScreen() {
                 visible={confirmDialog.visible}
                 title={confirmDialog.title}
                 message={confirmDialog.message}
-                onConfirm={onConfirmRef.current}
+                onConfirm={confirmDialog.onConfirm}
                 onClose={closeDialog}
             />
         </KeyboardAvoidingView>

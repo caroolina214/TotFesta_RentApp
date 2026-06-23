@@ -46,14 +46,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .eq('auth_user_id', authUserId)
             .maybeSingle();
 
-        if (data) {
-            useUserStore.getState().setUser({
-                id: data.id_usuario,
-                name: data.nombre,
-                email: data.email,
-                role: data.id_rol === 2 ? 'ADMIN' : data.id_rol === 3 ? 'CLIENT' : 'WORKER',
-            });
+        if (!data) return;
+
+        let clienteId: number | null = null;
+
+        if (data.id_rol === 3) {
+            const { data: clienteData } = await supabase
+                .from('clientes')
+                .select('id_cliente')
+                .eq('email', data.email)
+                .maybeSingle();
+
+            clienteId = clienteData?.id_cliente ?? null;
         }
+
+        useUserStore.getState().setUser({
+            id: data.id_usuario,
+            clienteId,
+            name: data.nombre,
+            email: data.email,
+            role: data.id_rol === 2 ? 'ADMIN' : data.id_rol === 3 ? 'CLIENT' : 'WORKER',
+        });
     };
 
     const login = async (email: string, password: string): Promise<boolean> => {

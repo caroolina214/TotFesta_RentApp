@@ -14,6 +14,8 @@ import { ChevronLeft, Pencil } from 'lucide-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useUserStore } from '@/src/stores/userStore';
+
 
 export default function OrderDetailScreen() {
     const { isDark } = useThemeContext();
@@ -22,12 +24,15 @@ export default function OrderDetailScreen() {
     const queryClient = useQueryClient();
     const [showConfirm, setShowConfirm] = useState(false);
     const [newEstado, setNewEstado] = useState<EstadoPedido | null>(null);
+    const { role, clienteId } = useUserStore();
+
 
     const { data: pedido, isLoading } = useQuery({
-        queryKey: ['pedidos', id],
-        queryFn: () => pedidoService.getAll().then(p => p.find(p => p.id === Number(id))),
+        queryKey: ['pedido', id],
+        queryFn: () => pedidoService.getById(Number(id)),
         enabled: !!id,
     });
+
 
     const updateEstadoMutation = useMutation({
         mutationFn: (estado: EstadoPedido) => pedidoService.updateEstado(Number(id), estado),
@@ -71,14 +76,17 @@ export default function OrderDetailScreen() {
                         <ChevronLeft size={20} color={AppColors.Aqua} />
                         <Text className="text-festa-aqua font-schibsted">Pedidos</Text>
                     </Pressable>
-                    <AppButton
-                        label="Editar"
-                        onPress={() => router.push(`/(protected)/(tabs)/orders/new?id=${id}`)}
-                        icon={Pencil}
-                        bgColor={AppColors.AquaClar}
-                        textColor={AppColors.AquaObscur}
-                        shadow
-                    />
+                    {(role === 'ADMIN' || role === 'WORKER' || pedido.clienteId === clienteId) && (
+                        <AppButton
+                            label="Editar"
+                            onPress={() => router.push(`/(protected)/(tabs)/orders/new?id=${id}`)}
+                            icon={Pencil}
+                            bgColor={AppColors.AquaClar}
+                            textColor={AppColors.AquaObscur}
+                            shadow
+                        />
+                    )}
+
                 </HStack>
 
                 <HStack space="sm" style={{ alignItems: 'center' }}>
@@ -123,6 +131,31 @@ export default function OrderDetailScreen() {
                         </VStack>
                     </VStack>
                 </Card>
+                <Card className={`p-4 rounded-2xl ${isDark ? 'bg-festa-aquaObscur' : 'bg-white'}`}>
+                    <VStack space="sm">
+                        <Text className="text-xs font-schibsted text-festa-baseMig uppercase tracking-widest">
+                            Línies del pedido
+                        </Text>
+
+                        {pedido.lineas.map(l => (
+                            <VStack key={l.id} space="xs" style={{ paddingVertical: 6 }}>
+                                <Text className="font-schibsted text-festa-baseObscur">
+                                    Producte: {l.producto.nombre}
+                                </Text>
+                                <Text className="font-schibsted text-festa-baseMig">
+                                    Quantitat: {l.cantidadTotal}
+                                </Text>
+                                <Text className="font-schibsted text-festa-baseMig">
+                                    Dies: {l.diasAlquiler}
+                                </Text>
+                                <Text className="font-schibsted text-festa-baseMig">
+                                    Import: {l.importeLinea} €
+                                </Text>
+                            </VStack>
+                        ))}
+                    </VStack>
+                </Card>
+
             </VStack>
 
             <ConfirmDialog

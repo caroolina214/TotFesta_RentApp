@@ -1,4 +1,3 @@
-import { PedidoItem } from '@/src/components/custom';
 import { Card } from '@/src/components/ui/card';
 import { HStack } from '@/src/components/ui/hstack';
 import { Text } from '@/src/components/ui/text';
@@ -11,13 +10,14 @@ import { useQuery } from '@tanstack/react-query';
 import { pedidoService } from '@/src/services/pedidoService';
 import { router } from 'expo-router';
 import { ArrowRight, Package, Settings, User, Users } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
 import { Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PedidoItem } from '@/src/components/custom';
 
 export default function HomeScreen() {
     const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
+    const { name, role, clienteId } = useUserStore();
 
     const today = new Date().toLocaleDateString('ca-ES', {
         weekday: 'long',
@@ -25,23 +25,21 @@ export default function HomeScreen() {
         month: 'long',
     });
 
-    const { name, role } = useUserStore();
+    const isClient = role === 'CLIENT';
+
+    const { data: pedidosCliente = [] } = useQuery({
+        queryKey: ['pedidos', 'cliente', clienteId],
+        queryFn: () => pedidoService.getByClienteId(clienteId!),
+        enabled: isClient && !!clienteId,
+    });
 
     const { data: pedidosActivos = [] } = useQuery({
         queryKey: ['pedidos', 'activos'],
         queryFn: pedidoService.getActivos,
+        enabled: !isClient,
     });
 
-    const { data: totalPedidosData = [] } = useQuery({
-        queryKey: ['pedidos'],
-        queryFn: pedidoService.getAll,
-    });
-
-    const totalPedidos = totalPedidosData.length;
-
-    const recollidesPendents = pedidosActivos.filter(
-        (p) => p.estado === 'ENTREGADO'
-    ).length;
+    const pedidosMostrados = isClient ? pedidosCliente : pedidosActivos;
 
     return (
         <ScrollView
@@ -54,8 +52,6 @@ export default function HomeScreen() {
             }}
         >
             <VStack space="xl">
-
-                {/* Capçalera */}
                 <VStack space="xs">
                     <Text className="text-3xl font-fuzzy-bold text-festa-aqua">
                         Hola, {name}! 👋
@@ -65,34 +61,36 @@ export default function HomeScreen() {
                     </Text>
                 </VStack>
 
-                {/* Resum */}
                 <HStack space="md">
-                    <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
-                        <VStack space="xs">
-                            <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
-                                Pedidos actius
-                            </Text>
-                            <Text className={`text-2xl font-fuzzy-bold flex items-baseline gap-2 ${isDark ? 'text-festa-aquaObscur' : 'text-festa-aqua'}`}>
-                                <Package size={20} color={isDark ? AppColors.AquaObscur : AppColors.Aqua} />
-                                {pedidosActivos.length}
-                            </Text>
-                        </VStack>
-                    </Card>
+                    {!isClient && (
+                        <>
+                            <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
+                                <VStack space="xs">
+                                    <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
+                                        Pedidos actius
+                                    </Text>
+                                    <Text className={`text-2xl font-fuzzy-bold flex items-baseline gap-2 ${isDark ? 'text-festa-aquaObscur' : 'text-festa-aqua'}`}>
+                                        <Package size={20} color={isDark ? AppColors.AquaObscur : AppColors.Aqua} />
+                                        {pedidosActivos.length}
+                                    </Text>
+                                </VStack>
+                            </Card>
 
-                    <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
-                        <VStack space="xs">
-                            <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
-                                Recollides pendents
-                            </Text>
-                            <Text className={`text-2xl font-fuzzy-bold flex items-baseline gap-2 ${isDark ? 'text-festa-fucsiaObscur' : 'text-festa-fucsia'}`}>
-                                <Package size={20} color={isDark ? AppColors.FucsiaObscur : AppColors.Fucsia} />
-                                {recollidesPendents}
-                            </Text>
-                        </VStack>
-                    </Card>
+                            <Card className={`flex-1 p-4 rounded-2xl border ${isDark ? 'bg-festa-baseMig border-festa-baseClar' : 'bg-white border-festa-baseMig'}`}>
+                                <VStack space="xs">
+                                    <Text className={`text-xs font-schibsted ${isDark ? 'text-festa-baseObscur' : 'text-festa-baseMig'}`}>
+                                        Recollides pendents
+                                    </Text>
+                                    <Text className={`text-2xl font-fuzzy-bold flex items-baseline gap-2 ${isDark ? 'text-festa-fucsiaObscur' : 'text-festa-fucsia'}`}>
+                                        <Package size={20} color={isDark ? AppColors.FucsiaObscur : AppColors.Fucsia} />
+                                        {pedidosActivos.filter((p) => p.estado === 'ENTREGADO').length}
+                                    </Text>
+                                </VStack>
+                            </Card>
+                        </>
+                    )}
                 </HStack>
 
-                {/* Accés ràpid */}
                 <VStack space="sm">
                     {role === 'ADMIN' && (
                         <Pressable onPress={() => router.push('/clients')}>
@@ -114,6 +112,7 @@ export default function HomeScreen() {
                             </Card>
                         </Pressable>
                     )}
+
                     <Pressable onPress={() => router.push('/(protected)/profile')}>
                         <Card className="p-4 rounded-2xl shadow-sm elevation-sm bg-festa-aquaClar">
                             <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -132,6 +131,7 @@ export default function HomeScreen() {
                             </HStack>
                         </Card>
                     </Pressable>
+
                     <Pressable onPress={() => router.push('/(protected)/preferences')}>
                         <Card className="p-4 rounded-2xl shadow-sm elevation-sm bg-festa-grocClar">
                             <HStack space="md" style={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -152,26 +152,31 @@ export default function HomeScreen() {
                     </Pressable>
                 </VStack>
 
-                {/* Operativa del dia */}
                 <VStack space="md">
                     <Text className="text-lg font-fuzzy-bold text-festa-aqua">
-                        Operativa prevista per avui
+                        {isClient ? 'Últimes comandes' : 'Operativa prevista per avui'}
                     </Text>
 
-                    {pedidosActivos.length === 0 ? (
+                    {pedidosMostrados.length === 0 ? (
                         <Card className="p-4 rounded-2xl shadow-sm elevation-sm">
                             <Text className="text-sm font-schibsted text-festa-baseMig text-center">
-                                No hi ha pedidos actius per avui
+                                {isClient
+                                    ? 'No tens comandes encara'
+                                    : 'No hi ha pedidos actius per avui'}
                             </Text>
                         </Card>
                     ) : (
-                        pedidosActivos.map((pedido) => (
-                            <Card className={`px-3 py-1 rounded-2xl shadow-sm elevation-sm ${isDark ? 'bg-festa-aquaObscur' : 'bg-white'}`} key={pedido.id}>
+                        pedidosMostrados.map((pedido) => (
+                            <Card
+                                className={`px-3 py-1 rounded-2xl shadow-sm elevation-sm ${isDark ? 'bg-festa-aquaObscur' : 'bg-white'}`}
+                                key={pedido.id}
+                            >
                                 <PedidoItem pedido={pedido} isDark={isDark} />
                             </Card>
                         ))
                     )}
                 </VStack>
+
                 <View />
             </VStack>
         </ScrollView>

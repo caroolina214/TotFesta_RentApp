@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { clientSchema } from './client.schema';
 
 export const loginSchema = z.object({
     email: z.string().email('El correu electrònic no és vàlid'),
@@ -7,9 +8,13 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
-export const registerSchema = z
-    .object({
-        nombre: z.string().min(2, 'El nom ha de tindre almenys 2 caràcters'),
+export const registerSchema = clientSchema
+    .pick({
+        nombre: true,
+        telefono: true,
+        direccion: true,
+    })
+    .extend({
         email: z.string().email('El correu electrònic no és vàlid'),
         password: z.string().min(8, 'Mínim 8 caràcters'),
         confirmPassword: z.string().min(1, 'Confirma la contrasenya'),

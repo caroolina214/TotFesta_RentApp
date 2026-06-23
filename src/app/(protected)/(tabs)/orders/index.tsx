@@ -17,12 +17,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function OrdersScreen() {
     const { isDark } = useThemeContext();
     const insets = useSafeAreaInsets();
-    const { role } = useUserStore();
+    const { role, clienteId } = useUserStore();
 
     const { data: pedidos = [], isLoading } = useQuery({
-        queryKey: ['pedidos'],
-        queryFn: pedidoService.getAll,
+        queryKey: ['pedidos', role, clienteId],
+        queryFn: () => {
+            if (role === 'CLIENT') {
+                return pedidoService.getByClienteId(clienteId!);
+            }
+            return pedidoService.getAll();
+        },
     });
+
 
     return (
         <View style={{ flex: 1, backgroundColor: isDark ? AppColors.BaseObscur : AppColors.BaseClar, paddingTop: insets.top, paddingBottom: insets.bottom }}>

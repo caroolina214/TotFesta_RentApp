@@ -56,6 +56,12 @@ export default function ProfileScreen() {
         }
     };
 
+    const [telefono, setTelefono] = useState('');
+    const [linea1, setLinea1] = useState('');
+    const [ciudad, setCiudad] = useState('');
+    const [codigoPostal, setCodigoPostal] = useState('');
+    const [loadingClient, setLoadingClient] = useState(false);
+
     const handleSave = async () => {
         const userId = (await supabase.auth.getUser()).data.user?.id;
 
@@ -194,7 +200,9 @@ export default function ProfileScreen() {
                             </HStack>
                             <HStack space="sm" style={{ alignItems: 'center' }}>
                                 <Shield size={16} color={isDark ? AppColors.Aqua : AppColors.Morat} />
-                                <Text className={`font-schibsted ${isDark ? 'text-festa-aqua' : 'text-festa-baseMig'}`}>{role === 'ADMIN' ? 'Administrador' : 'Operari'}</Text>
+                                <Text className={`font-schibsted ${isDark ? 'text-festa-aqua' : 'text-festa-baseMig'}`}>
+                                    {role === 'ADMIN' ? 'Administrador' : role === 'CLIENT' ? 'Client' : 'Operari'}
+                                </Text>
                             </HStack>
                         </VStack>
                     </Card>

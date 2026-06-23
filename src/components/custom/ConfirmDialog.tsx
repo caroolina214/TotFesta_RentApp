@@ -52,7 +52,7 @@ export default function ConfirmDialog({
                         />
                         <AppButton
                             label={confirmText}
-                            onPress={() => { onClose(); setTimeout(() => onConfirm(), 100); }}
+                            onPress={async () => { await onConfirm(); onClose(); }}
                             bgColor={AppColors.Aqua}
                             textColor={AppColors.BaseObscur}
                             outlined
